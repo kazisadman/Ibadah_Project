@@ -1,6 +1,8 @@
 require('dotenv').config();
 const express = require('express');
 const crypto = require('crypto');
+const fs = require('fs');
+const path = require('path');
 const { MongoClient } = require('mongodb');
 
 const { MONGODB_URI, APP_PASSWORD, DB_NAME = 'ibadah', PORT = 3000 } = process.env;
@@ -11,7 +13,9 @@ if (!MONGODB_URI || !APP_PASSWORD) {
 
 const app = express();
 app.use(express.json({ limit: '5mb' }));
-app.use(express.static('public'));
+const page = () => fs.readFileSync(path.join(__dirname, 'public', 'index.html'), 'utf8');
+app.get(['/', '/index.html'], (q, r) => r.type('html').send(page()));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // --- auth: password sent in a header, compared in constant time, with simple brute-force lockout
 const fails = new Map();

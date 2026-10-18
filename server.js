@@ -40,29 +40,38 @@ const cleanEntry = (date, b = {}) => ({
   prayers: Object.fromEntries(PRAYERS.map(k => [k, STATUS.includes(b.prayers?.[k]) ? b.prayers[k] : '']))
 });
 
-let db;
+let dbp;
+const getDb = () => dbp || (dbp = MongoClient.connect(MONGODB_URI).then(c => {
+  const d = c.db(DB_NAME);
+  d.collection('entries').createIndex({ date: 1 }, { unique: true }).catch(() => {});
+  return d;
+}));
+app.use('/api', async (q, r, next) => {
+  try { q.db = await getDb(); next(); }
+  catch (e) { dbp = null; console.error(e.message); r.status(500).json({ error: 'Database connection failed' }); }
+});
 const wrap = fn => (req, res) => fn(req, res).catch(e => { console.error(e); res.status(500).json({ error: 'Server error' }); });
 
 app.get('/api/check', auth, (q, r) => r.json({ ok: true }));
 
 app.get('/api/entries', auth, wrap(async (q, r) =>
-  r.json(await db.collection('entries').find({}, { projection: { _id: 0 } }).sort({ date: 1 }).toArray())));
+  r.json(await q.db.collection('entries').find({}, { projection: { _id: 0 } }).sort({ date: 1 }).toArray())));
 
 app.put('/api/entries/:date', auth, wrap(async (q, r) => {
   if (!dateOk(q.params.date)) return r.status(400).json({ error: 'Bad date' });
   const e = cleanEntry(q.params.date, q.body);
-  await db.collection('entries').updateOne({ date: e.date }, { $set: e }, { upsert: true });
+  await q.db.collection('entries').updateOne({ date: e.date }, { $set: e }, { upsert: true });
   r.json(e);
 }));
 
 app.get('/api/settings', auth, wrap(async (q, r) => {
-  const s = await db.collection('settings').findOne({ _id: 'main' });
+  const s = await q.db.collection('settings').findOne({ _id: 'main' });
   r.json({ goalDurood: s?.goalDurood ?? 100, goalIstighfar: s?.goalIstighfar ?? 100 });
 }));
 
 app.put('/api/settings', auth, wrap(async (q, r) => {
   const s = { goalDurood: num(q.body.goalDurood), goalIstighfar: num(q.body.goalIstighfar) };
-  await db.collection('settings').updateOne({ _id: 'main' }, { $set: s }, { upsert: true });
+  await q.db.collection('settings').updateOne({ _id: 'main' }, { $set: s }, { upsert: true });
   r.json(s);
 }));
 
@@ -70,12 +79,11 @@ app.post('/api/import', auth, wrap(async (q, r) => {
   const list = (Array.isArray(q.body.entries) ? q.body.entries : []).filter(e => dateOk(e?.date)).slice(0, 20000);
   if (!list.length) return r.status(400).json({ error: 'No valid entries' });
   const ops = list.map(e => { const c = cleanEntry(e.date, e); return { updateOne: { filter: { date: c.date }, update: { $set: c }, upsert: true } }; });
-  await db.collection('entries').bulkWrite(ops);
+  await q.db.collection('entries').bulkWrite(ops);
   r.json({ imported: list.length });
 }));
 
-MongoClient.connect(MONGODB_URI).then(async client => {
-  db = client.db(DB_NAME);
-  await db.collection('entries').createIndex({ date: 1 }, { unique: true });
+if (require.main === module) {
   app.listen(PORT, () => console.log(`Dashboard running on http://localhost:${PORT}`));
-}).catch(e => { console.error('MongoDB connection failed:', e.message); process.exit(1); });
+}
+module.exports = app;

@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ibadah Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#eef2ef;--card:#fff;--ink:#13221d;--mute:#5d6f68;--line:#d7e0db;--g:#1d7a5a;--g2:#0f4a38;--gold:#b88a2e;--red:#b4443a;--l0:#e3eae6;--l1:#b7dccb;--l2:#7fc2a3;--l3:#3f9e79;--l4:#16694c}
+:root[data-theme=dark]{--bg:#0d1714;--card:#14231e;--ink:#e6efeb;--mute:#8fa59c;--line:#243830;--g:#3fb68b;--g2:#2a8a68;--gold:#d9ae4f;--red:#e0675c;--l0:#1b2c26;--l1:#1f4d3c;--l2:#2a7358;--l3:#38a07b;--l4:#5fd1a6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif;padding:0 0 40px}
+h1,h2,.big{font-family:Literata,Georgia,serif}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+header{background:var(--g2);color:#f2f7f4;padding:18px 0 22px}
+header .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+h1{margin:0;font-size:1.5rem}
+.tools{display:flex;gap:8px;flex-wrap:wrap}
+.tools button,.tools input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:6px 12px}
+.tools button:hover{background:rgba(255,255,255,.22)}
+.grid{display:grid;gap:14px;margin-top:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h2{margin:0 0 10px;font-size:1.05rem}
+.sub{color:var(--mute);font-size:.9rem}
+.ring{--p:0;width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--g) calc(var(--p)*1%),var(--l0) 0);display:grid;place-items:center;flex:none}
+.ring.gold{background:conic-gradient(var(--gold) calc(var(--p)*1%),var(--l0) 0)}
+.ring i{width:70px;height:70px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-style:normal;font-weight:700}
+.row{display:flex;gap:14px;align-items:center}
+.big{font-size:2rem;font-weight:700;line-height:1.1}
+.counter{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.counter button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 10px;min-width:48px}
+.counter button:hover{border-color:var(--g)}
+.counter input{width:100px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 8px}
+.pr{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
+.pr:first-of-type{border-top:0}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{flex:1;border:0;background:transparent;padding:6px 4px;font-size:.88rem;color:var(--mute)}
+.seg button+button{border-left:1px solid var(--line)}
+.seg button.on.ontime{background:var(--g);color:#fff}
+.seg button.on.late{background:var(--gold);color:#fff}
+.seg button.on.missed{background:var(--red);color:#fff}
+.stat{display:flex;flex-direction:column}
+.stat span{color:var(--mute);font-size:.88rem}
+.stat b{font-family:Literata,serif;font-size:1.7rem}
+.tabs{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:8px}
+.tabs button{border:0;background:transparent;padding:4px 12px;color:var(--mute)}
+.tabs button.on{background:var(--g);color:#fff}
+.chartbox{position:relative;height:240px}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);grid-auto-columns:14px;gap:3px;overflow-x:auto;padding-bottom:6px}
+.heat div{border-radius:3px;background:var(--l0)}
+.heat .l1{background:var(--l1)}.heat .l2{background:var(--l2)}.heat .l3{background:var(--l3)}.heat .l4{background:var(--l4)}
+.heat .sel{outline:2px solid var(--gold)}
+.tasbih{width:150px;height:150px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,var(--g),var(--g2));color:#fff;font:700 2.6rem Literata,serif;box-shadow:0 6px 0 rgba(0,0,0,.25);touch-action:manipulation}
+.tasbih:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.btn{border:1px solid var(--g);background:var(--g);color:#fff;border-radius:8px;padding:7px 14px}
+.btn.ghost{background:transparent;color:var(--g)}
+#login{max-width:340px;margin:18vh auto;text-align:center}
+#login input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);margin:12px 0}
+#msg{color:var(--red);min-height:1.4em}
+#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--g2);color:#fff;padding:8px 16px;border-radius:20px;opacity:0;transition:opacity .2s;pointer-events:none}
+#toast.show{opacity:1}
+.badge{display:inline-block;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:2px 10px;margin:3px 4px 0 0;font-size:.85rem}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div id="login" hidden>
+  <h1>Ibadah Dashboard</h1>
+  <p class="sub">Enter your password to open your dashboard.</p>
+  <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
+  <button class="btn" id="loginBtn">Open dashboard</button>
+  <p id="msg" role="alert"></p>
+</div>
+
+<div id="app" hidden>
+<header><div class="wrap">
+  <div><h1>Ibadah Dashboard</h1><div class="sub" style="color:#b9d3c8" id="hijriNote"></div></div>
+  <div class="tools">
+    <input type="date" id="date" aria-label="Date">
+    <button id="today">Today</button>
+    <button id="theme">Dark mode</button>
+    <button id="export">Export</button>
+    <button id="importBtn">Import</button>
+    <input type="file" id="importFile" accept=".json" hidden>
+    <button id="logout">Log out</button>
+  </div>
+</div></header>
+
+<main class="wrap">
+  <div class="grid g3">
+    <div class="card row"><div class="ring" id="rD"><i id="rDt">0%</i></div><div><div class="sub">Durood</div><div class="big" id="vD">0</div><div class="sub" id="gD"></div></div></div>
+    <div class="card row"><div class="ring" id="rI"><i id="rIt">0%</i></div><div><div class="sub">Istighfar</div><div class="big" id="vI">0</div><div class="sub" id="gI"></div></div></div>
+    <div class="card row"><div class="ring gold" id="rP"><i id="rPt">0/5</i></div><div><div class="sub">Prayers</div><div class="big" id="vP">0 of 5</div><div class="sub" id="pSub"></div></div></div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h2>Log for <span id="dlabel"></span></h2>
+      <div class="sub">Durood</div>
+      <div class="counter" data-k="durood"></div>
+      <div class="sub" style="margin-top:14px">Istighfar</div>
+      <div class="counter" data-k="istighfar"></div>
+    </div>
+    <div class="card">
+      <h2>Salat</h2>
+      <div id="prayers"></div>
+    </div>
+  </div>
+
+  <div class="grid g2">
+    <div class="card">
+      <h2>Streaks</h2>
+      <div class="row" style="gap:30px">
+        <div class="stat"><span>Current</span><b id="sCur">0</b></div>
+        <div class="stat"><span>Longest</span><b id="sMax">0</b></div>
+        <div class="stat"><span>Perfect days</span><b id="sPerf">0</b></div>
+      </div>
+      <p class="sub" style="margin:8px 0 0">A day counts when all 5 prayers are marked on time or late.</p>
+      <div id="badges"></div>
+    </div>
+    <div class="card">
+      <h2>Tasbih counter</h2>
+      <div class="row" style="gap:18px">
+        <button class="tasbih" id="tap" aria-label="Tap to count">0</button>
+        <div>
+          <select id="tTarget"><option value="durood">Durood</option><option value="istighfar">Istighfar</option></select>
+          <div class="counter"><button id="tReset">Reset</button><button id="tSave" class="btn">Add to today</button></div>
+          <p class="sub" id="tHelp">Tap the circle to count.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid g3">
+    <div class="card stat"><span>Total durood</span><b id="tD">0</b><span id="tDm"></span></div>
+    <div class="card stat"><span>Total istighfar</span><b id="tI">0</b><span id="tIm"></span></div>
+    <div class="card stat"><span>Prayers completed</span><b id="tP">0</b><span id="tPm"></span></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Last 20 weeks</h2>
+    <div class="heat" id="heat"></div>
+    <div class="sub">Darker means more prayers done that day. Tap a square to open that day.</div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <div class="row" style="justify-content:space-between;flex-wrap:wrap"><h2>Trends</h2>
+      <div class="tabs" id="range"><button data-r="7">7 days</button><button data-r="30" class="on">30 days</button><button data-r="90">90 days</button></div></div>
+    <div class="grid g2" style="margin-top:0">
+      <div><div class="sub">Durood and istighfar</div><div class="chartbox"><canvas id="cLine"></canvas></div></div>
+      <div><div class="sub">Prayers completed per day</div><div class="chartbox"><canvas id="cBar"></canvas></div></div>
+    </div>
+    <div style="margin-top:14px"><div class="sub">Which prayers you keep, by prayer (selected range)</div><div class="chartbox"><canvas id="cPr"></canvas></div></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Weekly goals</h2>
+    <div class="row" style="flex-wrap:wrap">
+      <label>Daily durood goal <input type="number" id="goalD" min="0" style="width:90px"></label>
+      <label>Daily istighfar goal <input type="number" id="goalI" min="0" style="width:90px"></label>
+      <button class="btn ghost" id="saveGoals">Save goals</button>
+    </div>
+    <p class="sub" id="weekCmp"></p>
+  </div>
+</main>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+const PR=[['fajr','Fajr'],['dhuhr','Dhuhr'],['asr','Asr'],['maghrib','Maghrib'],['isha','Isha']];
+const ST=[['ontime','On time'],['late','Late'],['missed','Missed']];
+const $=id=>document.getElementById(id);
+let pw=localStorage.getItem('ibadah_pw')||'',entries={},goals={goalDurood:100,goalIstighfar:100},cur='',range=30,charts={},tap=0,timer;
+
+const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return fmt(d)};
+const todayStr=()=>fmt(new Date());
+const blank=d=>({date:d,durood:0,istighfar:0,prayers:{fajr:'',dhuhr:'',asr:'',maghrib:'',isha:''}});
+const get=d=>entries[d]||blank(d);
+const done=e=>PR.filter(([k])=>e.prayers[k]==='ontime'||e.prayers[k]==='late').length;
+const n=x=>Number(x).toLocaleString();
+const toast=t=>{const el=$('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)};
+
+async function api(path,opt={}){
+  const r=await fetch('/api'+path,{...opt,headers:{'Content-Type':'application/json','x-app-password':pw}});
+  if(r.status===401||r.status===429){const j=await r.json();throw Object.assign(new Error(j.error),{auth:true})}
+  if(!r.ok)throw new Error('Request failed');
+  return r.json();
+}
+
+async function boot(){
+  if(!pw)return showLogin();
+  try{
+    const[list,s]=await Promise.all([api('/entries'),api('/settings')]);
+    list.forEach(e=>entries[e.date]=e);goals=s;
+    $('login').hidden=true;$('app').hidden=false;
+    cur=todayStr();$('goalD').value=goals.goalDurood;$('goalI').value=goals.goalIstighfar;
+    build();render();
+  }catch(e){if(e.auth){localStorage.removeItem('ibadah_pw');pw='';showLogin(e.message)}else showLogin('Could not reach the server.')}
+}
+function showLogin(m=''){$('app').hidden=true;$('login').hidden=false;$('msg').textContent=m}
+$('loginBtn').onclick=()=>{pw=$('pw').value;if(!pw)return;localStorage.setItem('ibadah_pw',pw);boot()};
+$('pw').onkeydown=e=>{if(e.key==='Enter')$('loginBtn').click()};
+$('logout').onclick=()=>{localStorage.removeItem('ibadah_pw');location.reload()};
+
+function save(){
+  const e=get(cur);entries[cur]=e;render();
+  clearTimeout(timer);
+  timer=setTimeout(()=>api('/entries/'+cur,{method:'PUT',body:JSON.stringify(entries[cur])}).then(()=>toast('Saved')).catch(()=>toast('Save failed. Check connection.')),500);
+}
+
+function build(){
+  document.querySelectorAll('.counter[data-k]').forEach(box=>{
+    const k=box.dataset.k;
+    [1,10,33,100].forEach(v=>{const b=document.createElement('button');b.textContent='+'+v;b.onclick=()=>{get(cur);entries[cur]=get(cur);entries[cur][k]+=v;save()};box.appendChild(b)});
+    const inp=document.createElement('input');inp.type='number';inp.min=0;inp.placeholder='Set total';inp.id='in_'+k;
+    inp.onchange=()=>{entries[cur]=get(cur);entries[cur][k]=Math.max(0,parseInt(inp.value)||0);save()};
+    const u=document.createElement('button');u.textContent='Undo -1';u.onclick=()=>{entries[cur]=get(cur);entries[cur][k]=Math.max(0,entries[cur][k]-1);save()};
+    box.append(u,inp);
+  });
+  $('prayers').innerHTML=PR.map(([k,l])=>`<div class="pr"><b>${l}</b><div class="seg" data-p="${k}">${ST.map(([s,t])=>`<button class="${s}" data-s="${s}">${t}</button>`).join('')}</div></div>`).join('');
+  document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
+    const k=b.parentNode.dataset.p;entries[cur]=get(cur);
+    entries[cur].prayers[k]=entries[cur].prayers[k]===b.dataset.s?'':b.dataset.s;save();
+  });
+}
+
+$('date').onchange=e=>{if(e.target.value){cur=e.target.value;render()}};
+$('today').onclick=()=>{cur=todayStr();render()};
+$('theme').onclick=()=>{const d=document.documentElement.dataset.theme==='dark'?'light':'dark';document.documentElement.dataset.theme=d;localStorage.setItem('ibadah_theme',d);render()};
+if(localStorage.getItem('ibadah_theme')==='dark'||(!localStorage.getItem('ibadah_theme')&&matchMedia('(prefers-color-scheme:dark)').matches))document.documentElement.dataset.theme='dark';
+$('range').querySelectorAll('button').forEach(b=>b.onclick=()=>{range=+b.dataset.r;$('range').querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b));drawCharts()});
+
+// tasbih
+$('tap').onclick=()=>{tap++;$('tap').textContent=tap;navigator.vibrate&&navigator.vibrate(15)};
+$('tReset').onclick=()=>{tap=0;$('tap').textContent=0};
+$('tSave').onclick=()=>{if(!tap)return;const k=$('tTarget').value;entries[cur]=get(cur);entries[cur][k]+=tap;toast('Added '+tap+' to '+cur);tap=0;$('tap').textContent=0;save()};
+
+// goals
+$('saveGoals').onclick=async()=>{goals={goalDurood:+$('goalD').value||0,goalIstighfar:+$('goalI').value||0};
+  try{await api('/settings',{method:'PUT',body:JSON.stringify(goals)});toast('Goals saved');render()}catch{toast('Save failed')}};
+
+// export / import
+$('export').onclick=()=>{const blob=new Blob([JSON.stringify({entries:Object.values(entries),goals},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ibadah-backup-'+todayStr()+'.json';a.click()};
+$('importBtn').onclick=()=>$('importFile').click();
+$('importFile').onchange=async e=>{try{const j=JSON.parse(await e.target.files[0].text());
+  const r=await api('/import',{method:'POST',body:JSON.stringify({entries:j.entries||j})});toast('Imported '+r.imported+' days');setTimeout(()=>location.reload(),900)}catch{toast('Import failed. Use a file exported from this app.')}};
+
+function streaks(){
+  const days=Object.keys(entries).sort();let max=0,run=0,prev=null,perf=0;
+  days.forEach(d=>{const ok=done(entries[d])===5;if(ok)perf++;
+    if(ok){run=(prev&&addDays(prev,1)===d)?run+1:1;max=Math.max(max,run)}else run=0;prev=ok?d:null});
+  let c=0,d=todayStr();if(done(get(d))<5)d=addDays(d,-1);
+  while(done(get(d))===5){c++;d=addDays(d,-1)}
+  return{cur:c,max,perf};
+}
+
+function render(){
+  const e=get(cur),dt=parse(cur);
+  $('date').value=cur;
+  $('dlabel').textContent=dt.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const pct=(v,g)=>g?Math.min(100,Math.round(v/g*100)):0;
+  $('vD').textContent=n(e.durood);$('vI').textContent=n(e.istighfar);
+  $('rD').style.setProperty('--p',pct(e.durood,goals.goalDurood));$('rDt').textContent=pct(e.durood,goals.goalDurood)+'%';
+  $('rI').style.setProperty('--p',pct(e.istighfar,goals.goalIstighfar));$('rIt').textContent=pct(e.istighfar,goals.goalIstighfar)+'%';
+  $('gD').textContent='Goal '+n(goals.goalDurood);$('gI').textContent='Goal '+n(goals.goalIstighfar);
+  const p=done(e);$('vP').textContent=p+' of 5';$('rP').style.setProperty('--p',p*20);$('rPt').textContent=p+'/5';
+  const miss=PR.filter(([k])=>e.prayers[k]==='missed').length;$('pSub').textContent=miss?miss+' marked missed':(p===5?'All five done':'');
+  $('in_durood').value='';$('in_istighfar').value='';
+  document.querySelectorAll('.seg').forEach(s=>s.querySelectorAll('button').forEach(b=>b.classList.toggle('on',e.prayers[s.dataset.p]===b.dataset.s)));
+  // streaks, totals
+  const st=streaks();$('sCur').textContent=st.cur;$('sMax').textContent=st.max;$('sPerf').textContent=st.perf;
+  const bd=[];[[7,'7-day streak'],[30,'30-day streak'],[100,'100-day streak']].forEach(([v,l])=>{if(st.max>=v)bd.push(l)});
+  const all=Object.values(entries),sumD=all.reduce((a,x)=>a+x.durood,0),sumI=all.reduce((a,x)=>a+x.istighfar,0),sumP=all.reduce((a,x)=>a+done(x),0);
+  [[1000,'1,000 durood',sumD],[10000,'10,000 durood',sumD],[100000,'100,000 durood',sumD],[1000,'1,000 istighfar',sumI],[10000,'10,000 istighfar',sumI],[100000,'100,000 istighfar',sumI]].forEach(([v,l,s])=>{if(s>=v)bd.push(l)});
+  $('badges').innerHTML=bd.map(b=>`<span class="badge">${b}</span>`).join('')||'<span class="sub">Badges appear at 7-day streaks and 1,000 counts.</span>';
+  const ym=todayStr().slice(0,7),mo=all.filter(x=>x.date.startsWith(ym));
+  $('tD').textContent=n(sumD);$('tI').textContent=n(sumI);$('tP').textContent=n(sumP);
+  $('tDm').textContent='This month '+n(mo.reduce((a,x)=>a+x.durood,0));$('tIm').textContent='This month '+n(mo.reduce((a,x)=>a+x.istighfar,0));$('tPm').textContent='This month '+n(mo.reduce((a,x)=>a+done(x),0));
+  // week compare
+  const wk=(from,to)=>{let a=0,b=0,c=0;for(let i=from;i<to;i++){const x=get(addDays(todayStr(),-i));a+=x.durood;b+=x.istighfar;c+=done(x)}return{a,b,c}};
+  const w1=wk(0,7),w0=wk(7,14),df=(x,y)=>x===y?'same as':(x>y?'up '+n(x-y)+' from':'down '+n(y-x)+' from');
+  $('weekCmp').textContent=`Last 7 days vs the 7 before: durood ${df(w1.a,w0.a)} ${n(w0.a)}, istighfar ${df(w1.b,w0.b)} ${n(w0.b)}, prayers ${w1.c} vs ${w0.c}.`;
+  heat();drawCharts();
+}
+
+function heat(){
+  const h=$('heat');h.innerHTML='';const t=parse(todayStr()),start=new Date(t);start.setDate(t.getDate()-t.getDay()-19*7);
+  for(let i=0;i<20*7;i++){const d=new Date(start);d.setDate(start.getDate()+i);const s=fmt(d);const div=document.createElement('div');
+    if(d>t){div.style.visibility='hidden'}else{const p=done(get(s));div.className='l'+Math.min(4,Math.ceil(p*4/5))+(s===cur?' sel':'');if(!p)div.className=s===cur?'sel':'';
+      div.title=s+': '+p+'/5 prayers';div.onclick=()=>{cur=s;render();scrollTo({top:0,behavior:'smooth'})}}
+    h.appendChild(div)}
+  h.scrollLeft=h.scrollWidth;
+}
+
+function drawCharts(){
+  const cs=getComputedStyle(document.documentElement),c=v=>cs.getPropertyValue(v).trim();
+  Chart.defaults.color=c('--mute');Chart.defaults.font.family='Figtree';
+  const labels=[],D=[],I=[],ON=[],LT=[];
+  for(let i=range-1;i>=0;i--){const s=addDays(todayStr(),-i),e=get(s);labels.push(s.slice(5));D.push(e.durood);I.push(e.istighfar);
+    ON.push(PR.filter(([k])=>e.prayers[k]==='ontime').length);LT.push(PR.filter(([k])=>e.prayers[k]==='late').length)}
+  const grid={color:c('--line')};
+  const mk=(id,cfg)=>{charts[id]&&charts[id].destroy();charts[id]=new Chart($(id),cfg)};
+  const base={responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false}};
+  mk('cLine',{type:'line',data:{labels,datasets:[
+    {label:'Durood',data:D,borderColor:c('--g'),backgroundColor:c('--g'),tension:.3,pointRadius:range>30?0:2,yAxisID:'y'},
+    {label:'Istighfar',data:I,borderColor:c('--gold'),backgroundColor:c('--gold'),tension:.3,pointRadius:range>30?0:2,yAxisID:'y1'}]},
+    options:{...base,scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{grid,beginAtZero:true,title:{display:true,text:'Durood'}},y1:{position:'right',grid:{display:false},beginAtZero:true,title:{display:true,text:'Istighfar'}}}}});
+  mk('cBar',{type:'bar',data:{labels,datasets:[
+    {label:'On time',data:ON,backgroundColor:c('--g')},{label:'Late',data:LT,backgroundColor:c('--gold')}]},
+    options:{...base,scales:{x:{stacked:true,grid:{display:false},ticks:{maxTicksLimit:8}},y:{stacked:true,max:5,grid,ticks:{stepSize:1}}}}});
+  const cnt={ontime:[],late:[],missed:[]};
+  PR.forEach(([k])=>{let o=0,l=0,m=0;for(let i=0;i<range;i++){const v=get(addDays(todayStr(),-i)).prayers[k];if(v==='ontime')o++;else if(v==='late')l++;else if(v==='missed')m++}cnt.ontime.push(o);cnt.late.push(l);cnt.missed.push(m)});
+  mk('cPr',{type:'bar',data:{labels:PR.map(p=>p[1]),datasets:[
+    {label:'On time',data:cnt.ontime,backgroundColor:c('--g')},{label:'Late',data:cnt.late,backgroundColor:c('--gold')},{label:'Missed',data:cnt.missed,backgroundColor:c('--red')}]},
+    options:{...base,indexAxis:'y',scales:{x:{stacked:true,grid},y:{stacked:true,grid:{display:false}}}}});
+}
+boot();
+</script>
+</body>
+</html>

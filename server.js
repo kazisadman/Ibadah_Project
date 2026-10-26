@@ -37,8 +37,11 @@ const PRAYERS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
 const STATUS = ['', 'ontime', 'late', 'missed'];
 const dateOk = d => /^\d{4}-\d{2}-\d{2}$/.test(d);
 const num = v => Math.max(0, Math.min(10000000, parseInt(v) || 0));
+const gl = v => (v === null || v === undefined || v === '') ? null : num(v);
 const cleanEntry = (date, b = {}) => ({
   date,
+  goalDurood: gl(b.goalDurood),
+  goalIstighfar: gl(b.goalIstighfar),
   durood: num(b.durood),
   istighfar: num(b.istighfar),
   prayers: Object.fromEntries(PRAYERS.map(k => [k, STATUS.includes(b.prayers?.[k]) ? b.prayers[k] : '']))
@@ -70,11 +73,21 @@ app.put('/api/entries/:date', auth, wrap(async (q, r) => {
 
 app.get('/api/settings', auth, wrap(async (q, r) => {
   const s = await q.db.collection('settings').findOne({ _id: 'main' });
-  r.json({ goalDurood: s?.goalDurood ?? 100, goalIstighfar: s?.goalIstighfar ?? 100 });
+  r.json({
+    goalDurood: s?.goalDurood ?? 100, goalIstighfar: s?.goalIstighfar ?? 100,
+    modeDurood: s?.modeDurood ?? 'manual', modeIstighfar: s?.modeIstighfar ?? 'manual',
+    pct: s?.pct ?? 1, capDurood: s?.capDurood ?? 0, capIstighfar: s?.capIstighfar ?? 0
+  });
 }));
 
 app.put('/api/settings', auth, wrap(async (q, r) => {
-  const s = { goalDurood: num(q.body.goalDurood), goalIstighfar: num(q.body.goalIstighfar) };
+  const b = q.body || {};
+  const s = {
+    goalDurood: num(b.goalDurood), goalIstighfar: num(b.goalIstighfar),
+    modeDurood: b.modeDurood === 'auto' ? 'auto' : 'manual', modeIstighfar: b.modeIstighfar === 'auto' ? 'auto' : 'manual',
+    pct: Math.max(0, Math.min(100, parseFloat(b.pct) || 0)),
+    capDurood: num(b.capDurood), capIstighfar: num(b.capIstighfar)
+  };
   await q.db.collection('settings').updateOne({ _id: 'main' }, { $set: s }, { upsert: true });
   r.json(s);
 }));

@@ -108,6 +108,8 @@ h1{margin:0;font-size:1.5rem}
       <div class="counter" data-k="durood"></div>
       <div class="sub" style="margin-top:14px">Istighfar</div>
       <div class="counter" data-k="istighfar"></div>
+      <div class="sub" style="margin-top:14px">Goal for this day (locked once saved)</div>
+      <div class="counter"><label>Durood <input type="number" id="dayGD" min="0" style="width:90px"></label> <label>Istighfar <input type="number" id="dayGI" min="0" style="width:90px"></label></div>
     </div>
     <div class="card">
       <h2>Salat</h2>
@@ -162,12 +164,21 @@ h1{margin:0;font-size:1.5rem}
   </div>
 
   <div class="card" style="margin-top:14px">
-    <h2>Weekly goals</h2>
-    <div class="row" style="flex-wrap:wrap">
-      <label>Daily durood goal <input type="number" id="goalD" min="0" style="width:90px"></label>
-      <label>Daily istighfar goal <input type="number" id="goalI" min="0" style="width:90px"></label>
-      <button class="btn ghost" id="saveGoals">Save goals</button>
+    <h2>Goals</h2>
+    <p class="sub" style="margin-top:0">Each day keeps its own goal, so changing these only affects today and later. In Auto mode a day's goal rises by the percent below only if you reached the previous day's goal.</p>
+    <div class="grid g2" style="margin-top:0">
+      <div class="row" style="flex-wrap:wrap;gap:8px"><b style="width:80px">Durood</b>
+        <select id="modeD"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
+        <label>Goal / start <input type="number" id="goalD" min="0" style="width:80px"></label>
+        <label>Max cap <input type="number" id="capD" min="0" style="width:80px" placeholder="none"></label></div>
+      <div class="row" style="flex-wrap:wrap;gap:8px"><b style="width:80px">Istighfar</b>
+        <select id="modeI"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
+        <label>Goal / start <input type="number" id="goalI" min="0" style="width:80px"></label>
+        <label>Max cap <input type="number" id="capI" min="0" style="width:80px" placeholder="none"></label></div>
     </div>
+    <div class="row" style="flex-wrap:wrap;margin-top:10px"><label>Auto increase % <input type="number" id="pct" min="0" max="100" step="0.1" style="width:70px"></label>
+      <button class="btn ghost" id="saveGoals">Save goals</button><span class="sub">Cap 0 or empty means no cap.</span></div>
+    <p class="sub" id="goalPrev"></p>
     <p class="sub" id="weekCmp"></p>
   </div>
 </main>
@@ -178,16 +189,33 @@ h1{margin:0;font-size:1.5rem}
 const PR=[['fajr','Fajr'],['dhuhr','Dhuhr'],['asr','Asr'],['maghrib','Maghrib'],['isha','Isha']];
 const ST=[['ontime','On time'],['late','Late'],['missed','Missed']];
 const $=id=>document.getElementById(id);
-let pw=localStorage.getItem('ibadah_pw')||'',entries={},goals={goalDurood:100,goalIstighfar:100},cur='',range=30,charts={},tap=0,timer;
+let pw=localStorage.getItem('ibadah_pw')||'',entries={},goals={goalDurood:100,goalIstighfar:100,modeDurood:'manual',modeIstighfar:'manual',pct:1,capDurood:0,capIstighfar:0},cur='',range=30,charts={},tap=0,timer;
 
 const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
 const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return fmt(d)};
 const todayStr=()=>fmt(new Date());
-const blank=d=>({date:d,durood:0,istighfar:0,prayers:{fajr:'',dhuhr:'',asr:'',maghrib:'',isha:''}});
+const blank=d=>({date:d,durood:0,istighfar:0,goalDurood:null,goalIstighfar:null,prayers:{fajr:'',dhuhr:'',asr:'',maghrib:'',isha:''}});
 const get=d=>entries[d]||blank(d);
 const done=e=>PR.filter(([k])=>e.prayers[k]==='ontime'||e.prayers[k]==='late').length;
 const n=x=>Number(x).toLocaleString();
+const KS=[['durood','Durood'],['istighfar','Istighfar']];
+const bump=(g,K)=>{let v=goals.pct>0?Math.max(g+1,Math.round(g*(100+goals.pct)/100)):g;const c=goals['cap'+K];if(c>0)v=Math.min(v,c);return v};
+function resolveGoal(date,k,K){
+  const e=entries[date];if(e&&e['goal'+K]!=null)return e['goal'+K];
+  const base=goals['goal'+K]||0;
+  if(goals['mode'+K]!=='auto')return base;
+  const pd=Object.keys(entries).filter(d=>d<date&&entries[d]['goal'+K]!=null).sort().pop();
+  if(!pd)return base;
+  const p=entries[pd],pg=p['goal'+K];
+  if(!pg)return base;
+  const c=goals['cap'+K];
+  return p[k]>=pg?bump(pg,K):(c>0?Math.min(pg,c):pg);
+}
+function fillGoalUI(){
+  $('goalD').value=goals.goalDurood;$('goalI').value=goals.goalIstighfar;$('modeD').value=goals.modeDurood;$('modeI').value=goals.modeIstighfar;
+  $('pct').value=goals.pct;$('capD').value=goals.capDurood||'';$('capI').value=goals.capIstighfar||'';
+}
 const toast=t=>{const el=$('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),1800)};
 
 async function api(path,opt={}){
@@ -202,8 +230,11 @@ async function boot(){
   try{
     const[list,s]=await Promise.all([api('/entries'),api('/settings')]);
     list.forEach(e=>entries[e.date]=e);goals=s;
+    const legacy=list.filter(e=>e.goalDurood==null||e.goalIstighfar==null);
+    if(legacy.length){legacy.forEach(e=>{if(e.goalDurood==null)e.goalDurood=goals.goalDurood;if(e.goalIstighfar==null)e.goalIstighfar=goals.goalIstighfar});
+      await api('/import',{method:'POST',body:JSON.stringify({entries:legacy})}).catch(()=>{})}
     $('login').hidden=true;$('app').hidden=false;
-    cur=todayStr();$('goalD').value=goals.goalDurood;$('goalI').value=goals.goalIstighfar;
+    cur=todayStr();fillGoalUI();
     build();render();
   }catch(e){if(e.auth){localStorage.removeItem('ibadah_pw');pw='';showLogin(e.message)}else showLogin('Could not reach the server.')}
 }
@@ -213,7 +244,7 @@ $('pw').onkeydown=e=>{if(e.key==='Enter')$('loginBtn').click()};
 $('logout').onclick=()=>{localStorage.removeItem('ibadah_pw');location.reload()};
 
 function save(){
-  const e=get(cur);entries[cur]=e;render();
+  const e=get(cur);entries[cur]=e;KS.forEach(([k,K])=>{if(e['goal'+K]==null)e['goal'+K]=resolveGoal(cur,k,K)});render();
   clearTimeout(timer);
   timer=setTimeout(()=>api('/entries/'+cur,{method:'PUT',body:JSON.stringify(entries[cur])}).then(()=>toast('Saved')).catch(()=>toast('Save failed. Check connection.')),500);
 }
@@ -246,8 +277,14 @@ $('tReset').onclick=()=>{tap=0;$('tap').textContent=0};
 $('tSave').onclick=()=>{if(!tap)return;const k=$('tTarget').value;entries[cur]=get(cur);entries[cur][k]+=tap;toast('Added '+tap+' to '+cur);tap=0;$('tap').textContent=0;save()};
 
 // goals
-$('saveGoals').onclick=async()=>{goals={goalDurood:+$('goalD').value||0,goalIstighfar:+$('goalI').value||0};
-  try{await api('/settings',{method:'PUT',body:JSON.stringify(goals)});toast('Goals saved');render()}catch{toast('Save failed')}};
+[['dayGD','Durood'],['dayGI','Istighfar']].forEach(([id,K])=>$(id).onchange=()=>{entries[cur]=get(cur);entries[cur]['goal'+K]=Math.max(0,parseInt($(id).value)||0);save()});
+$('saveGoals').onclick=async()=>{
+  const g={goalDurood:+$('goalD').value||0,goalIstighfar:+$('goalI').value||0,modeDurood:$('modeD').value,modeIstighfar:$('modeI').value,
+    pct:Math.max(0,Math.min(100,parseFloat($('pct').value)||0)),capDurood:+$('capD').value||0,capIstighfar:+$('capI').value||0};
+  try{await api('/settings',{method:'PUT',body:JSON.stringify(g)});goals=g;
+    const td=todayStr(),t=entries[td];
+    if(t){KS.forEach(([k,K])=>{t['goal'+K]=null});KS.forEach(([k,K])=>{t['goal'+K]=resolveGoal(td,k,K)});await api('/entries/'+td,{method:'PUT',body:JSON.stringify(t)})}
+    toast('Goals saved');render()}catch{toast('Save failed')}};
 
 // export / import
 $('export').onclick=()=>{const blob=new Blob([JSON.stringify({entries:Object.values(entries),goals},null,2)],{type:'application/json'});
@@ -271,9 +308,15 @@ function render(){
   $('dlabel').textContent=dt.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   const pct=(v,g)=>g?Math.min(100,Math.round(v/g*100)):0;
   $('vD').textContent=n(e.durood);$('vI').textContent=n(e.istighfar);
-  $('rD').style.setProperty('--p',pct(e.durood,goals.goalDurood));$('rDt').textContent=pct(e.durood,goals.goalDurood)+'%';
-  $('rI').style.setProperty('--p',pct(e.istighfar,goals.goalIstighfar));$('rIt').textContent=pct(e.istighfar,goals.goalIstighfar)+'%';
-  $('gD').textContent='Goal '+n(goals.goalDurood);$('gI').textContent='Goal '+n(goals.goalIstighfar);
+  const gD=resolveGoal(cur,'durood','Durood'),gI=resolveGoal(cur,'istighfar','Istighfar');
+  $('rD').style.setProperty('--p',pct(e.durood,gD));$('rDt').textContent=pct(e.durood,gD)+'%';
+  $('rI').style.setProperty('--p',pct(e.istighfar,gI));$('rIt').textContent=pct(e.istighfar,gI)+'%';
+  $('gD').textContent='Goal '+n(gD);$('gI').textContent='Goal '+n(gI);
+  $('dayGD').value=gD;$('dayGI').value=gI;
+  const t=todayStr();
+  $('goalPrev').textContent=KS.map(([k,K])=>{const g=resolveGoal(t,k,K),c=get(t)[k];
+    if(goals['mode'+K]!=='auto')return K+": tomorrow's goal "+n(goals['goal'+K])+' (manual)';
+    return K+": tomorrow's goal "+(c>=g&&g>0?n(bump(g,K)):n(g))+(c>=g?'':' (reach today\'s '+n(g)+' to increase)')}).join('  |  ');
   const p=done(e);$('vP').textContent=p+' of 5';$('rP').style.setProperty('--p',p*20);$('rPt').textContent=p+'/5';
   const miss=PR.filter(([k])=>e.prayers[k]==='missed').length;$('pSub').textContent=miss?miss+' marked missed':(p===5?'All five done':'');
   $('in_durood').value='';$('in_istighfar').value='';

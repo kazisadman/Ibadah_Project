@@ -2,190 +2,259 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ibadah Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;700&family=Literata:opsz,wght@7..72,500;7..72,700&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-:root{--bg:#eef2ef;--card:#fff;--ink:#13221d;--mute:#5d6f68;--line:#d7e0db;--g:#1d7a5a;--g2:#0f4a38;--gold:#b88a2e;--red:#b4443a;--l0:#e3eae6;--l1:#b7dccb;--l2:#7fc2a3;--l3:#3f9e79;--l4:#16694c}
-:root[data-theme=dark]{--bg:#0d1714;--card:#14231e;--ink:#e6efeb;--mute:#8fa59c;--line:#243830;--g:#3fb68b;--g2:#2a8a68;--gold:#d9ae4f;--red:#e0675c;--l0:#1b2c26;--l1:#1f4d3c;--l2:#2a7358;--l3:#38a07b;--l4:#5fd1a6}
+@property --p{syntax:'<number>';inherits:false;initial-value:0}
+:root{--bg:#f0f1ec;--card:#fff;--ink:#101914;--mute:#6a756f;--line:#e5e7e0;--acc:#c8f169;--on-acc:#16210f;--hero:#101c17;--hero-ink:#eef3ee;--g:#2f9e6f;--gold:#d19a2a;--red:#d9503f;--l0:#eceee7;--l1:#d8ecb0;--l2:#aedb6b;--l3:#6cbd4a;--l4:#2f8f4e;--r:22px}
+:root[data-theme=dark]{--bg:#0a110e;--card:#121d18;--ink:#e9f0eb;--mute:#8a9a92;--line:#1f2e27;--hero:#1b2d25;--g:#8fd46a;--gold:#e3b24a;--red:#ec6a5b;--l0:#1a2923;--l1:#27452d;--l2:#3a6f34;--l3:#69ad3e;--l4:#c8f169}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Figtree,system-ui,sans-serif;padding:0 0 40px}
-h1,h2,.big{font-family:Literata,Georgia,serif}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 button,select,input{font:inherit;color:inherit}
 button{cursor:pointer}
-:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
-header{background:var(--g2);color:#f2f7f4;padding:18px 0 22px}
-header .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
-h1{margin:0;font-size:1.5rem}
-.tools{display:flex;gap:8px;flex-wrap:wrap}
-.tools button,.tools input{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:6px 12px}
-.tools button:hover{background:rgba(255,255,255,.22)}
-.grid{display:grid;gap:14px;margin-top:14px}
-.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-.g3{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
-.card h2{margin:0 0 10px;font-size:1.05rem}
-.sub{color:var(--mute);font-size:.9rem}
-.ring{--p:0;width:92px;height:92px;border-radius:50%;background:conic-gradient(var(--g) calc(var(--p)*1%),var(--l0) 0);display:grid;place-items:center;flex:none}
-.ring.gold{background:conic-gradient(var(--gold) calc(var(--p)*1%),var(--l0) 0)}
-.ring i{width:70px;height:70px;border-radius:50%;background:var(--card);display:grid;place-items:center;font-style:normal;font-weight:700}
-.row{display:flex;gap:14px;align-items:center}
-.big{font-size:2rem;font-weight:700;line-height:1.1}
-.counter{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
-.counter button{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 10px;min-width:48px}
+:focus-visible{outline:2px solid var(--g);outline-offset:2px}
+input,select{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 12px;min-height:40px}
+h1,h2{margin:0;letter-spacing:-.02em}
+h1{font-size:1.6rem;font-weight:800}
+h2{font-size:1.05rem;font-weight:700}
+.sub{color:var(--mute);font-size:.85rem}
+.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.g2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.shell{display:grid;grid-template-columns:84px minmax(0,1fr);gap:20px;max-width:1480px;margin:0 auto;padding:16px}
+.rail{position:sticky;top:16px;height:calc(100vh - 32px);background:var(--hero);border-radius:32px;display:flex;flex-direction:column;align-items:center;padding:18px 0;gap:10px}
+.logo{width:46px;height:46px;border-radius:16px;background:var(--acc);color:var(--on-acc);display:grid;place-items:center;font-weight:800;font-size:1.3rem;margin-bottom:14px}
+.rail a{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:rgba(255,255,255,.6);text-decoration:none;transition:background .2s,color .2s}
+.rail a:hover{color:#fff}
+.rail a.on{background:var(--acc);color:var(--on-acc)}
+.page{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.col{display:flex;flex-direction:column;gap:20px;min-width:0}
+.top{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
+.top .tools{display:flex;gap:8px;align-items:center}
+.ib{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--ink);padding:0}
+#date{border-radius:999px;background:var(--card)}
+.pill{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:0 16px;height:44px;font-weight:600}
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;flex-basis:100%}
+.wd{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:8px 0;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--mute);font-size:.75rem}
+.wd b{font-size:1.05rem;color:var(--ink)}
+.wd.on{background:var(--hero);border-color:var(--hero);color:rgba(255,255,255,.7)}
+.wd.on b{color:#fff}
+.dot{width:6px;height:6px;border-radius:50%;margin-top:2px}
+.dot.full{background:var(--g)}
+.wd.on .dot.full{background:var(--acc)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:20px;scroll-margin-top:16px}
+.hero{background:var(--hero) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64'%3E%3Cg fill='none' stroke='%23c8f169' stroke-opacity='.08'%3E%3Crect x='14' y='14' width='36' height='36'/%3E%3Crect x='14' y='14' width='36' height='36' transform='rotate(45 32 32)'/%3E%3C/g%3E%3C/svg%3E");color:var(--hero-ink);border-radius:28px;padding:26px}
+.eyebrow{color:var(--acc);font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+#heroMsg{font-size:1.45rem;font-weight:700;margin:6px 0 22px;letter-spacing:-.02em;max-width:30ch}
+.rings{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.rg{display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+.hero .sub{color:rgba(238,243,238,.6)}
+.rl{font-weight:600;margin-top:10px}
+.big{font-size:1.7rem;font-weight:800;line-height:1.15;letter-spacing:-.02em}
+.ring{--p:0;--c:var(--acc);width:104px;height:104px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),rgba(255,255,255,.12) 0);display:grid;place-items:center;transition:--p .8s ease}
+.ring.gold{--c:var(--gold)}
+.ring i{width:80px;height:80px;border-radius:50%;background:var(--hero);display:grid;place-items:center;font-style:normal;font-weight:700}
+.two{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.counter{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.counter button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:0 16px;min-height:42px;font-weight:600}
 .counter button:hover{border-color:var(--g)}
-.counter input{width:100px;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 8px}
-.pr{display:grid;grid-template-columns:80px 1fr;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line)}
-.pr:first-of-type{border-top:0}
-.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
-.seg button{flex:1;border:0;background:transparent;padding:6px 4px;font-size:.88rem;color:var(--mute)}
-.seg button+button{border-left:1px solid var(--line)}
-.seg button.on.ontime{background:var(--g);color:#fff}
-.seg button.on.late{background:var(--gold);color:#fff}
-.seg button.on.missed{background:var(--red);color:#fff}
+.counter input{width:112px;border-radius:999px}
+.gl{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;color:var(--mute);font-size:.85rem}
+.gl input{width:96px;border-radius:999px}
+.pr{display:flex;flex-direction:column;gap:8px;padding:12px 0;border-top:1px solid var(--line)}
+.pr:first-of-type{border-top:0;padding-top:4px}
+.pr b{font-weight:700}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{border:1px solid var(--line);background:transparent;border-radius:999px;min-height:40px;font-size:.85rem;color:var(--mute);font-weight:600}
+.seg button.on.ontime{background:var(--acc);color:var(--on-acc);border-color:transparent}
+.seg button.on.late{background:var(--gold);color:#fff;border-color:transparent}
+.seg button.on.missed{background:var(--red);color:#fff;border-color:transparent}
+.scroll{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:6px}
+.scroll>.card{flex:0 0 min(330px,86%);scroll-snap-align:start}
+.lime{background:var(--acc);color:var(--on-acc);border-color:transparent}
+.lime .sub{color:rgba(22,33,15,.7)}
+.lime select,.lime .counter button{background:rgba(255,255,255,.55);border-color:transparent;color:var(--on-acc)}
+.tasbih{width:132px;height:132px;border-radius:50%;border:0;background:var(--hero);color:var(--acc);font:800 2.4rem "Plus Jakarta Sans",sans-serif;box-shadow:0 6px 0 rgba(0,0,0,.22);touch-action:manipulation;flex:none}
+.tasbih:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.22)}
 .stat{display:flex;flex-direction:column}
-.stat span{color:var(--mute);font-size:.88rem}
-.stat b{font-family:Literata,serif;font-size:1.7rem}
-.tabs{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:8px}
-.tabs button{border:0;background:transparent;padding:4px 12px;color:var(--mute)}
-.tabs button.on{background:var(--g);color:#fff}
-.chartbox{position:relative;height:240px}
-.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);grid-auto-columns:14px;gap:3px;overflow-x:auto;padding-bottom:6px}
-.heat div{border-radius:3px;background:var(--l0)}
+.stat span{color:var(--mute);font-size:.8rem}
+.stat b{font-size:1.7rem;font-weight:800;letter-spacing:-.02em}
+.tabs{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
+.tabs button{border:0;background:transparent;padding:5px 14px;border-radius:999px;color:var(--mute);font-weight:600}
+.tabs button.on{background:var(--hero);color:#fff}
+.chartbox{position:relative;height:230px;margin-top:8px}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,16px);grid-auto-columns:16px;gap:4px;overflow-x:auto;padding:12px 0 8px}
+.heat div{border-radius:5px;background:var(--l0)}
 .heat .l1{background:var(--l1)}.heat .l2{background:var(--l2)}.heat .l3{background:var(--l3)}.heat .l4{background:var(--l4)}
-.heat .sel{outline:2px solid var(--gold)}
-.tasbih{width:150px;height:150px;border-radius:50%;border:0;background:radial-gradient(circle at 35% 30%,var(--g),var(--g2));color:#fff;font:700 2.6rem Literata,serif;box-shadow:0 6px 0 rgba(0,0,0,.25);touch-action:manipulation}
-.tasbih:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
-.btn{border:1px solid var(--g);background:var(--g);color:#fff;border-radius:8px;padding:7px 14px}
-.btn.ghost{background:transparent;color:var(--g)}
-#login{max-width:340px;margin:18vh auto;text-align:center}
-#login input{width:100%;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--card);margin:12px 0}
-#msg{color:var(--red);min-height:1.4em}
-#toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--g2);color:#fff;padding:8px 16px;border-radius:20px;opacity:0;transition:opacity .2s;pointer-events:none}
+.heat .sel{outline:2px solid var(--ink);outline-offset:1px}
+.btn{border:0;background:var(--ink);color:var(--bg);border-radius:999px;padding:0 20px;min-height:44px;font-weight:700}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn.acc{background:var(--acc);color:var(--on-acc)}
+.lime .btn{background:var(--hero);color:var(--acc)}
+.badge{display:inline-block;background:var(--l1);color:var(--on-acc);border-radius:999px;padding:2px 12px;margin:6px 6px 0 0;font-size:.8rem;font-weight:600}
+:root[data-theme=dark] .badge{background:var(--l1);color:var(--acc)}
+#login{max-width:360px;margin:16vh auto;padding:32px 28px;text-align:center;background:var(--hero);color:var(--hero-ink);border-radius:32px;width:calc(100% - 32px)}
+#login .sub{color:rgba(238,243,238,.65)}
+#login input{width:100%;margin:16px 0 12px;border-radius:999px;padding:12px 18px;background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:#fff}
+#login .btn{width:100%}
+#msg{color:#ff9d8f;min-height:1.4em;margin:10px 0 0}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30;font-weight:600}
 #toast.show{opacity:1}
-.badge{display:inline-block;border:1px solid var(--gold);color:var(--gold);border-radius:20px;padding:2px 10px;margin:3px 4px 0 0;font-size:.85rem}
 [hidden]{display:none!important}
-@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+@media(max-width:1100px){.page{display:flex;flex-direction:column}.col{display:contents}}
+@media(max-width:760px){
+  body{padding-bottom:96px}
+  .shell{grid-template-columns:1fr;padding:12px}
+  .rail{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto;height:64px;flex-direction:row;justify-content:space-around;padding:0 8px;border-radius:32px;z-index:20}
+  .logo{display:none}
+  #date{display:none}
+  h1{font-size:1.3rem}
+  .hero{padding:20px}
+  #heroMsg{font-size:1.2rem}
+  .ring{width:84px;height:84px}.ring i{width:64px;height:64px;font-size:.9rem}
+  .big{font-size:1.3rem}
+  #toast{bottom:92px}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 21V11M12 21V4M19 21v-7"/></symbol>
+<symbol id="i-cal" viewBox="0 0 24 24"><path d="M4 6h16v14H4zM4 10h16M8 3v4M16 3v4"/></symbol>
+<symbol id="i-goal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></symbol>
+<symbol id="i-out" viewBox="0 0 24 24"><path d="M9 4H5v16h4M16 8l4 4-4 4M20 12H9"/></symbol>
+<symbol id="i-l" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-r" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></symbol>
+<symbol id="i-fire" viewBox="0 0 24 24"><path d="M12 3c1 4 5 5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/></symbol>
+</defs></svg>
+
 <div id="login" hidden>
+  <div class="logo" style="margin:0 auto 18px">ع</div>
   <h1>Ibadah Dashboard</h1>
   <p class="sub">Enter your password to open your dashboard.</p>
-  <input id="pw" type="password" placeholder="Password" autocomplete="current-password">
-  <button class="btn" id="loginBtn">Open dashboard</button>
+  <input id="pw" type="password" placeholder="Password" autocomplete="current-password" aria-label="Password">
+  <button class="btn acc" id="loginBtn">Open dashboard</button>
   <p id="msg" role="alert"></p>
 </div>
 
-<div id="app" hidden>
-<header><div class="wrap">
-  <div><h1>Ibadah Dashboard</h1><div class="sub" style="color:#b9d3c8" id="hijriNote"></div></div>
-  <div class="tools">
-    <input type="date" id="date" aria-label="Date">
-    <button id="today">Today</button>
-    <button id="theme">Dark mode</button>
-    <button id="export">Export</button>
-    <button id="importBtn">Import</button>
-    <input type="file" id="importFile" accept=".json" hidden>
-    <button id="logout">Log out</button>
-  </div>
-</div></header>
+<div id="app" class="shell" hidden>
+  <nav class="rail" aria-label="Sections">
+    <div class="logo">ع</div>
+    <a href="#sToday" class="on" title="Today" aria-label="Today"><svg class="ic"><use href="#i-home"/></svg></a>
+    <a href="#sInsights" title="Insights" aria-label="Insights"><svg class="ic"><use href="#i-chart"/></svg></a>
+    <a href="#sHistory" title="History" aria-label="History"><svg class="ic"><use href="#i-cal"/></svg></a>
+    <a href="#sGoals" title="Goals" aria-label="Goals"><svg class="ic"><use href="#i-goal"/></svg></a>
+  </nav>
 
-<main class="wrap">
-  <div class="grid g3">
-    <div class="card row"><div class="ring" id="rD"><i id="rDt">0%</i></div><div><div class="sub">Durood</div><div class="big" id="vD">0</div><div class="sub" id="gD"></div></div></div>
-    <div class="card row"><div class="ring" id="rI"><i id="rIt">0%</i></div><div><div class="sub">Istighfar</div><div class="big" id="vI">0</div><div class="sub" id="gI"></div></div></div>
-    <div class="card row"><div class="ring gold" id="rP"><i id="rPt">0/5</i></div><div><div class="sub">Prayers</div><div class="big" id="vP">0 of 5</div><div class="sub" id="pSub"></div></div></div>
-  </div>
-
-  <div class="grid g2">
-    <div class="card">
-      <h2>Log for <span id="dlabel"></span></h2>
-      <div class="sub">Durood</div>
-      <div class="counter" data-k="durood"></div>
-      <div class="sub" style="margin-top:14px">Istighfar</div>
-      <div class="counter" data-k="istighfar"></div>
-      <div class="sub" style="margin-top:14px">Goal for this day (locked once saved)</div>
-      <div class="counter"><label>Durood <input type="number" id="dayGD" min="0" style="width:90px"></label> <label>Istighfar <input type="number" id="dayGI" min="0" style="width:90px"></label></div>
-    </div>
-    <div class="card">
-      <h2>Salat</h2>
-      <div id="prayers"></div>
-    </div>
-  </div>
-
-  <div class="grid g2">
-    <div class="card">
-      <h2>Streaks</h2>
-      <div class="row" style="gap:30px">
-        <div class="stat"><span>Current</span><b id="sCur">0</b></div>
-        <div class="stat"><span>Longest</span><b id="sMax">0</b></div>
-        <div class="stat"><span>Perfect days</span><b id="sPerf">0</b></div>
+  <div class="page">
+    <header class="top" id="sToday">
+      <div><div class="sub">Assalamu alaikum</div><h1 id="dlabel"></h1></div>
+      <div class="tools">
+        <button class="ib" id="prev" aria-label="Previous day"><svg class="ic"><use href="#i-l"/></svg></button>
+        <input type="date" id="date" aria-label="Date">
+        <button class="ib" id="next" aria-label="Next day"><svg class="ic"><use href="#i-r"/></svg></button>
+        <button class="pill" id="today">Today</button>
+        <button class="ib" id="theme" aria-label="Toggle dark mode"><svg class="ic"><use href="#i-moon"/></svg></button>
+        <button class="ib" id="logout" aria-label="Log out"><svg class="ic"><use href="#i-out"/></svg></button>
       </div>
-      <p class="sub" style="margin:8px 0 0">A day counts when all 5 prayers are marked on time or late.</p>
-      <div id="badges"></div>
-    </div>
-    <div class="card">
-      <h2>Tasbih counter</h2>
-      <div class="row" style="gap:18px">
-        <button class="tasbih" id="tap" aria-label="Tap to count">0</button>
-        <div>
-          <select id="tTarget"><option value="durood">Durood</option><option value="istighfar">Istighfar</option></select>
-          <div class="counter"><button id="tReset">Reset</button><button id="tSave" class="btn">Add to today</button></div>
-          <p class="sub" id="tHelp">Tap the circle to count.</p>
+      <div class="week" id="week"></div>
+    </header>
+
+    <section class="col">
+      <div class="hero" style="order:1">
+        <div class="eyebrow" id="heroT">Today at a glance</div>
+        <div id="heroMsg"></div>
+        <div class="rings">
+          <div class="rg"><div class="ring" id="rD"><i id="rDt">0%</i></div><div class="rl">Durood</div><div class="big" id="vD">0</div><div class="sub" id="gD"></div></div>
+          <div class="rg"><div class="ring" id="rI"><i id="rIt">0%</i></div><div class="rl">Istighfar</div><div class="big" id="vI">0</div><div class="sub" id="gI"></div></div>
+          <div class="rg"><div class="ring gold" id="rP"><i id="rPt">0/5</i></div><div class="rl">Prayers</div><div class="big" id="vP">0 of 5</div><div class="sub" id="pSub"></div></div>
         </div>
       </div>
-    </div>
-  </div>
 
-  <div class="grid g3">
-    <div class="card stat"><span>Total durood</span><b id="tD">0</b><span id="tDm"></span></div>
-    <div class="card stat"><span>Total istighfar</span><b id="tI">0</b><span id="tIm"></span></div>
-    <div class="card stat"><span>Prayers completed</span><b id="tP">0</b><span id="tPm"></span></div>
-  </div>
+      <div class="two" style="order:3">
+        <div class="card"><h2>Durood</h2><div class="sub">Tap to add to this day</div>
+          <div class="counter" data-k="durood"></div>
+          <label class="gl">Goal for this day <input type="number" id="dayGD" min="0"></label></div>
+        <div class="card"><h2>Istighfar</h2><div class="sub">Tap to add to this day</div>
+          <div class="counter" data-k="istighfar"></div>
+          <label class="gl">Goal for this day <input type="number" id="dayGI" min="0"></label></div>
+      </div>
 
-  <div class="card" style="margin-top:14px">
-    <h2>Last 20 weeks</h2>
-    <div class="heat" id="heat"></div>
-    <div class="sub">Darker means more prayers done that day. Tap a square to open that day.</div>
-  </div>
+      <div class="scroll" style="order:4">
+        <div class="card lime"><h2>Tasbih</h2>
+          <div class="row" style="flex-wrap:nowrap;margin-top:12px;gap:16px">
+            <button class="tasbih" id="tap" aria-label="Tap to count">0</button>
+            <div><select id="tTarget" aria-label="Count for"><option value="durood">Durood</option><option value="istighfar">Istighfar</option></select>
+              <div class="counter" style="margin-top:10px"><button id="tReset">Reset</button><button id="tSave" class="btn">Add to today</button></div>
+              <p class="sub" id="tHelp" style="margin:8px 0 0">Tap the circle to count.</p></div></div></div>
+        <div class="card"><h2>Streaks</h2>
+          <div class="row" style="gap:24px;margin-top:10px">
+            <div class="stat"><span>Current</span><b><svg class="ic" style="width:20px;height:20px;color:var(--gold)"><use href="#i-fire"/></svg> <span id="sCur" style="font:inherit;color:inherit;font-size:inherit">0</span></b></div>
+            <div class="stat"><span>Longest</span><b id="sMax">0</b></div>
+            <div class="stat"><span>Perfect days</span><b id="sPerf">0</b></div></div>
+          <p class="sub" style="margin:8px 0 0">A day counts when all 5 prayers are on time or late.</p><div id="badges"></div></div>
+        <div class="card"><h2>Totals</h2>
+          <div class="row" style="gap:22px;margin-top:10px">
+            <div class="stat"><span>Durood</span><b id="tD">0</b><span id="tDm"></span></div>
+            <div class="stat"><span>Istighfar</span><b id="tI">0</b><span id="tIm"></span></div>
+            <div class="stat"><span>Prayers</span><b id="tP">0</b><span id="tPm"></span></div></div></div>
+      </div>
 
-  <div class="card" style="margin-top:14px">
-    <div class="row" style="justify-content:space-between;flex-wrap:wrap"><h2>Trends</h2>
-      <div class="tabs" id="range"><button data-r="7">7 days</button><button data-r="30" class="on">30 days</button><button data-r="90">90 days</button></div></div>
-    <div class="grid g2" style="margin-top:0">
-      <div><div class="sub">Durood and istighfar</div><div class="chartbox"><canvas id="cLine"></canvas></div></div>
-      <div><div class="sub">Prayers completed per day</div><div class="chartbox"><canvas id="cBar"></canvas></div></div>
-    </div>
-    <div style="margin-top:14px"><div class="sub">Which prayers you keep, by prayer (selected range)</div><div class="chartbox"><canvas id="cPr"></canvas></div></div>
-  </div>
+      <div class="card" id="sInsights" style="order:6">
+        <div class="row" style="justify-content:space-between"><h2>Trends</h2>
+          <div class="tabs" id="range"><button data-r="7">7d</button><button data-r="30" class="on">30d</button><button data-r="90">90d</button></div></div>
+        <div class="g2">
+          <div><div class="sub">Durood and istighfar</div><div class="chartbox"><canvas id="cLine"></canvas></div></div>
+          <div><div class="sub">Prayers completed per day</div><div class="chartbox"><canvas id="cBar"></canvas></div></div>
+        </div>
+      </div>
 
-  <div class="card" style="margin-top:14px">
-    <h2>Goals</h2>
-    <p class="sub" style="margin-top:0">Each day keeps its own goal, so changing these only affects today and later. In Auto mode a day's goal rises by the percent below only if you reached the previous day's goal.</p>
-    <div class="grid g2" style="margin-top:0">
-      <div class="row" style="flex-wrap:wrap;gap:8px"><b style="width:80px">Durood</b>
-        <select id="modeD"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
-        <label>Goal / start <input type="number" id="goalD" min="0" style="width:80px"></label>
-        <label>Max cap <input type="number" id="capD" min="0" style="width:80px" placeholder="none"></label></div>
-      <div class="row" style="flex-wrap:wrap;gap:8px"><b style="width:80px">Istighfar</b>
-        <select id="modeI"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
-        <label>Goal / start <input type="number" id="goalI" min="0" style="width:80px"></label>
-        <label>Max cap <input type="number" id="capI" min="0" style="width:80px" placeholder="none"></label></div>
-    </div>
-    <div class="row" style="flex-wrap:wrap;margin-top:10px"><label>Auto increase % <input type="number" id="pct" min="0" max="100" step="0.1" style="width:70px"></label>
-      <button class="btn ghost" id="saveGoals">Save goals</button><span class="sub">Cap 0 or empty means no cap.</span></div>
-    <p class="sub" id="goalPrev"></p>
-    <p class="sub" id="weekCmp"></p>
+      <div class="card" id="sHistory" style="order:7">
+        <h2>Last 20 weeks</h2>
+        <div class="heat" id="heat"></div>
+        <div class="sub">Darker means more prayers done. Tap a square to open that day.</div>
+      </div>
+
+      <div class="card" id="sGoals" style="order:8">
+        <h2>Goals</h2>
+        <p class="sub" style="margin:4px 0 14px">Each day keeps its own goal, so changes here only affect today and later. In Auto mode a goal rises by the percent below only if you reached the previous day's goal.</p>
+        <div class="g2">
+          <div class="row"><b style="width:76px">Durood</b>
+            <select id="modeD" aria-label="Durood mode"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
+            <label>Goal / start <input type="number" id="goalD" min="0" style="width:84px"></label>
+            <label>Max cap <input type="number" id="capD" min="0" style="width:84px" placeholder="none"></label></div>
+          <div class="row"><b style="width:76px">Istighfar</b>
+            <select id="modeI" aria-label="Istighfar mode"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
+            <label>Goal / start <input type="number" id="goalI" min="0" style="width:84px"></label>
+            <label>Max cap <input type="number" id="capI" min="0" style="width:84px" placeholder="none"></label></div>
+        </div>
+        <div class="row" style="margin-top:14px"><label>Auto increase % <input type="number" id="pct" min="0" max="100" step="0.1" style="width:80px"></label>
+          <button class="btn" id="saveGoals">Save goals</button><span class="sub">Cap 0 or empty means no cap.</span></div>
+        <p class="sub" id="goalPrev" style="margin-bottom:0"></p>
+        <p class="sub" id="weekCmp"></p>
+        <div class="row" style="margin-top:6px"><button class="btn ghost" id="export">Export backup</button><button class="btn ghost" id="importBtn">Import backup</button>
+          <input type="file" id="importFile" accept=".json" hidden></div>
+      </div>
+    </section>
+
+    <aside class="col">
+      <div class="card" style="order:2"><h2>Salat plan</h2><div class="sub" style="margin-bottom:6px">Mark each prayer for this day</div><div id="prayers"></div></div>
+      <div class="card" style="order:5"><h2>Prayer analysis</h2><div class="sub">By prayer, for the selected range</div><div class="chartbox"><canvas id="cPr"></canvas></div></div>
+    </aside>
   </div>
-</main>
 </div>
 <div id="toast" role="status"></div>
 
 <script>
+
 const PR=[['fajr','Fajr'],['dhuhr','Dhuhr'],['asr','Asr'],['maghrib','Maghrib'],['isha','Isha']];
 const ST=[['ontime','On time'],['late','Late'],['missed','Missed']];
 const $=id=>document.getElementById(id);
@@ -334,7 +403,7 @@ function render(){
   const wk=(from,to)=>{let a=0,b=0,c=0;for(let i=from;i<to;i++){const x=get(addDays(todayStr(),-i));a+=x.durood;b+=x.istighfar;c+=done(x)}return{a,b,c}};
   const w1=wk(0,7),w0=wk(7,14),df=(x,y)=>x===y?'same as':(x>y?'up '+n(x-y)+' from':'down '+n(y-x)+' from');
   $('weekCmp').textContent=`Last 7 days vs the 7 before: durood ${df(w1.a,w0.a)} ${n(w0.a)}, istighfar ${df(w1.b,w0.b)} ${n(w0.b)}, prayers ${w1.c} vs ${w0.c}.`;
-  heat();drawCharts();
+  heat();drawCharts();week();hero();
 }
 
 function heat(){
@@ -348,7 +417,7 @@ function heat(){
 
 function drawCharts(){
   const cs=getComputedStyle(document.documentElement),c=v=>cs.getPropertyValue(v).trim();
-  Chart.defaults.color=c('--mute');Chart.defaults.font.family='Figtree';
+  Chart.defaults.color=c('--mute');Chart.defaults.font.family='Plus Jakarta Sans';Chart.defaults.elements.bar.borderRadius=6;Chart.defaults.elements.line.borderWidth=2.5;Chart.defaults.plugins.legend.labels.usePointStyle=true;Chart.defaults.plugins.legend.labels.boxWidth=8;
   const labels=[],D=[],I=[],ON=[],LT=[];
   for(let i=range-1;i>=0;i--){const s=addDays(todayStr(),-i),e=get(s);labels.push(s.slice(5));D.push(e.durood);I.push(e.istighfar);
     ON.push(PR.filter(([k])=>e.prayers[k]==='ontime').length);LT.push(PR.filter(([k])=>e.prayers[k]==='late').length)}
@@ -368,7 +437,21 @@ function drawCharts(){
     {label:'On time',data:cnt.ontime,backgroundColor:c('--g')},{label:'Late',data:cnt.late,backgroundColor:c('--gold')},{label:'Missed',data:cnt.missed,backgroundColor:c('--red')}]},
     options:{...base,indexAxis:'y',scales:{x:{stacked:true,grid},y:{stacked:true,grid:{display:false}}}}});
 }
+
+$('prev').onclick=()=>{cur=addDays(cur,-1);render()};
+$('next').onclick=()=>{cur=addDays(cur,1);render()};
+function week(){const t=parse(cur),st=new Date(t);st.setDate(t.getDate()-t.getDay());const w=$('week');w.innerHTML='';
+  for(let i=0;i<7;i++){const d=new Date(st);d.setDate(st.getDate()+i);const s=fmt(d),b=document.createElement('button');
+    b.className='wd'+(s===cur?' on':'');b.setAttribute('aria-label',s);
+    b.innerHTML='<span>'+d.toLocaleDateString(undefined,{weekday:'short'})+'</span><b>'+d.getDate()+'</b><i class="dot'+(done(get(s))===5?' full':'')+'"></i>';
+    b.onclick=()=>{cur=s;render()};w.appendChild(b)}}
+function hero(){const e=get(cur),gD=resolveGoal(cur,'durood','Durood'),gI=resolveGoal(cur,'istighfar','Istighfar'),p=done(e),need=[];
+  if(gD>0&&e.durood<gD)need.push(n(gD-e.durood)+' durood');if(gI>0&&e.istighfar<gI)need.push(n(gI-e.istighfar)+' istighfar');if(p<5)need.push((5-p)+(5-p>1?' prayers':' prayer'));
+  $('heroT').textContent=cur===todayStr()?'Today at a glance':'Day summary';
+  $('heroMsg').textContent=need.length?'Still to go: '+need.join(', '):'All goals complete. Masha\u2019Allah.'}
+document.querySelectorAll('.rail a').forEach(a=>a.addEventListener('click',()=>document.querySelectorAll('.rail a').forEach(x=>x.classList.toggle('on',x===a))));
 boot();
+
 </script>
 </body>
 </html>

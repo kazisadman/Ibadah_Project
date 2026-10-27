@@ -14,7 +14,7 @@
 :root[data-theme=dark]{--bg:#0a110e;--card:#121d18;--ink:#e9f0eb;--mute:#8a9a92;--line:#1f2e27;--hero:#1b2d25;--g:#8fd46a;--gold:#e3b24a;--red:#ec6a5b;--l0:#1a2923;--l1:#27452d;--l2:#3a6f34;--l3:#69ad3e;--l4:#c8f169}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{margin:0;overflow-x:hidden;background:var(--bg);color:var(--ink);font:15px/1.5 "Plus Jakarta Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
 button,select,input{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--g);outline-offset:2px}
@@ -24,7 +24,7 @@ h1{font-size:1.6rem;font-weight:800}
 h2{font-size:1.05rem;font-weight:700}
 .sub{color:var(--mute);font-size:.85rem}
 .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
-.g2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g2{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}.g2>*,.two>*{min-width:0}
 .ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 .shell{display:grid;grid-template-columns:84px minmax(0,1fr);gap:20px;max-width:1480px;margin:0 auto;padding:16px}
 .rail{position:sticky;top:16px;height:calc(100vh - 32px);background:var(--hero);border-radius:32px;display:flex;flex-direction:column;align-items:center;padding:18px 0;gap:10px}
@@ -32,14 +32,14 @@ h2{font-size:1.05rem;font-weight:700}
 .rail a{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;color:rgba(255,255,255,.6);text-decoration:none;transition:background .2s,color .2s}
 .rail a:hover{color:#fff}
 .rail a.on{background:var(--acc);color:var(--on-acc)}
-.page{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.page{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start;min-width:0}
 .col{display:flex;flex-direction:column;gap:20px;min-width:0}
 .top{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:space-between}
 .top .tools{display:flex;gap:8px;align-items:center}
 .ib{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);display:grid;place-items:center;color:var(--ink);padding:0}
 #date{border-radius:999px;background:var(--card)}
 .pill{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:0 16px;height:44px;font-weight:600}
-.week{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;flex-basis:100%}
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;flex-basis:100%;min-width:0}
 .wd{border:1px solid var(--line);background:var(--card);border-radius:18px;padding:8px 0;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--mute);font-size:.75rem}
 .wd b{font-size:1.05rem;color:var(--ink)}
 .wd.on{background:var(--hero);border-color:var(--hero);color:rgba(255,255,255,.7)}
@@ -59,7 +59,7 @@ h2{font-size:1.05rem;font-weight:700}
 .ring{--p:0;--c:var(--acc);width:104px;height:104px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),rgba(255,255,255,.12) 0);display:grid;place-items:center;transition:--p .8s ease}
 .ring.gold{--c:var(--gold)}
 .ring i{width:80px;height:80px;border-radius:50%;background:var(--hero);display:grid;place-items:center;font-style:normal;font-weight:700}
-.two{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.two{display:grid;gap:20px;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr))}
 .counter{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .counter button{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:0 16px;min-height:42px;font-weight:600}
 .counter button:hover{border-color:var(--g)}
@@ -74,7 +74,7 @@ h2{font-size:1.05rem;font-weight:700}
 .seg button.on.ontime{background:var(--acc);color:var(--on-acc);border-color:transparent}
 .seg button.on.late{background:var(--gold);color:#fff;border-color:transparent}
 .seg button.on.missed{background:var(--red);color:#fff;border-color:transparent}
-.scroll{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:6px}
+.scroll{scrollbar-width:none;display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x proximity;padding-bottom:6px}
 .scroll>.card{flex:0 0 min(330px,86%);scroll-snap-align:start}
 .lime{background:var(--acc);color:var(--on-acc);border-color:transparent}
 .lime .sub{color:rgba(22,33,15,.7)}
@@ -87,8 +87,8 @@ h2{font-size:1.05rem;font-weight:700}
 .tabs{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;gap:2px}
 .tabs button{border:0;background:transparent;padding:5px 14px;border-radius:999px;color:var(--mute);font-weight:600}
 .tabs button.on{background:var(--hero);color:#fff}
-.chartbox{position:relative;height:230px;margin-top:8px}
-.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,16px);grid-auto-columns:16px;gap:4px;overflow-x:auto;padding:12px 0 8px}
+.chartbox{position:relative;height:230px;margin-top:8px;width:100%;min-width:0}
+.heat{max-width:100%;display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,16px);grid-auto-columns:16px;gap:4px;overflow-x:auto;padding:12px 0 8px}
 .heat div{border-radius:5px;background:var(--l0)}
 .heat .l1{background:var(--l1)}.heat .l2{background:var(--l2)}.heat .l3{background:var(--l3)}.heat .l4{background:var(--l4)}
 .heat .sel{outline:2px solid var(--ink);outline-offset:1px}
@@ -105,11 +105,31 @@ h2{font-size:1.05rem;font-weight:700}
 #msg{color:#ff9d8f;min-height:1.4em;margin:10px 0 0}
 #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 18px;border-radius:999px;opacity:0;transition:opacity .2s;pointer-events:none;z-index:30;font-weight:600}
 #toast.show{opacity:1}
+.gset{display:flex;flex-direction:column;gap:10px;padding:14px;border:1px solid var(--line);border-radius:18px}
+.gset select{width:100%}
+.gf{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--mute);font-weight:600}
+.fld input{width:100%;color:var(--ink)}
 [hidden]{display:none!important}
-@media(max-width:1100px){.page{display:flex;flex-direction:column}.col{display:contents}}
+@media(max-width:1100px){
+  .page{display:flex;flex-direction:column;align-items:stretch}
+  .col{display:contents}
+  .col>*,.page>*{min-width:0;width:100%}
+  .pr{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .pr b{width:64px;flex:none}
+  .seg{flex:1;max-width:340px}
+}
 @media(max-width:760px){
   body{padding-bottom:96px}
-  .shell{grid-template-columns:1fr;padding:12px}
+  .shell{grid-template-columns:minmax(0,1fr);padding:12px;gap:14px}
+  .page{gap:14px}
+  .card{padding:16px;border-radius:20px}
+  .top .tools{width:100%}
+  .top .pill{flex:1}
+  .seg button{padding:0;font-size:.78rem}
+  .chartbox{height:210px}
+  .scroll>.card{flex-basis:88%}
+  .wd{border-radius:14px}
   .rail{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));top:auto;height:64px;flex-direction:row;justify-content:space-around;padding:0 8px;border-radius:32px;z-index:20}
   .logo{display:none}
   #date{display:none}
@@ -227,17 +247,18 @@ h2{font-size:1.05rem;font-weight:700}
         <h2>Goals</h2>
         <p class="sub" style="margin:4px 0 14px">Each day keeps its own goal, so changes here only affect today and later. In Auto mode a goal rises by the percent below only if you reached the previous day's goal.</p>
         <div class="g2">
-          <div class="row"><b style="width:76px">Durood</b>
+          <div class="gset"><b>Durood</b>
             <select id="modeD" aria-label="Durood mode"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
-            <label>Goal / start <input type="number" id="goalD" min="0" style="width:84px"></label>
-            <label>Max cap <input type="number" id="capD" min="0" style="width:84px" placeholder="none"></label></div>
-          <div class="row"><b style="width:76px">Istighfar</b>
+            <div class="gf"><label class="fld">Goal / start<input type="number" id="goalD" min="0"></label>
+              <label class="fld">Max cap<input type="number" id="capD" min="0" placeholder="none"></label></div></div>
+          <div class="gset"><b>Istighfar</b>
             <select id="modeI" aria-label="Istighfar mode"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
-            <label>Goal / start <input type="number" id="goalI" min="0" style="width:84px"></label>
-            <label>Max cap <input type="number" id="capI" min="0" style="width:84px" placeholder="none"></label></div>
+            <div class="gf"><label class="fld">Goal / start<input type="number" id="goalI" min="0"></label>
+              <label class="fld">Max cap<input type="number" id="capI" min="0" placeholder="none"></label></div></div>
         </div>
-        <div class="row" style="margin-top:14px"><label>Auto increase % <input type="number" id="pct" min="0" max="100" step="0.1" style="width:80px"></label>
-          <button class="btn" id="saveGoals">Save goals</button><span class="sub">Cap 0 or empty means no cap.</span></div>
+        <div class="row" style="margin-top:14px;align-items:flex-end"><label class="fld" style="width:130px">Auto increase %<input type="number" id="pct" min="0" max="100" step="0.1"></label>
+          <button class="btn" id="saveGoals">Save goals</button></div>
+        <p class="sub" style="margin:10px 0 0">Cap 0 or empty means no cap.</p>
         <p class="sub" id="goalPrev" style="margin-bottom:0"></p>
         <p class="sub" id="weekCmp"></p>
         <div class="row" style="margin-top:6px"><button class="btn ghost" id="export">Export backup</button><button class="btn ghost" id="importBtn">Import backup</button>

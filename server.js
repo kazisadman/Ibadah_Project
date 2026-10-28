@@ -38,8 +38,14 @@ const STATUS = ['', 'ontime', 'late', 'missed'];
 const dateOk = d => /^\d{4}-\d{2}-\d{2}$/.test(d);
 const num = v => Math.max(0, Math.min(10000000, parseInt(v) || 0));
 const gl = v => (v === null || v === undefined || v === '') ? null : num(v);
+const cleanLog = l => (Array.isArray(l) ? l : []).slice(-300)
+  .filter(x => x && ['durood', 'istighfar'].includes(x.k))
+  .map(x => ({ t: Math.max(0, parseInt(x.t) || 0), k: x.k, v: Math.max(-10000000, Math.min(10000000, parseInt(x.v) || 0)) }))
+  .filter(x => x.v !== 0);
 const cleanEntry = (date, b = {}) => ({
   date,
+  qaza: num(b.qaza),
+  log: cleanLog(b.log),
   goalDurood: gl(b.goalDurood),
   goalIstighfar: gl(b.goalIstighfar),
   durood: num(b.durood),
@@ -76,7 +82,7 @@ app.get('/api/settings', auth, wrap(async (q, r) => {
   r.json({
     goalDurood: s?.goalDurood ?? 100, goalIstighfar: s?.goalIstighfar ?? 100,
     modeDurood: s?.modeDurood ?? 'manual', modeIstighfar: s?.modeIstighfar ?? 'manual',
-    pct: s?.pct ?? 1, capDurood: s?.capDurood ?? 0, capIstighfar: s?.capIstighfar ?? 0
+    pct: s?.pct ?? 1, qazaStart: s?.qazaStart ?? 0, capDurood: s?.capDurood ?? 0, capIstighfar: s?.capIstighfar ?? 0
   });
 }));
 
@@ -85,7 +91,7 @@ app.put('/api/settings', auth, wrap(async (q, r) => {
   const s = {
     goalDurood: num(b.goalDurood), goalIstighfar: num(b.goalIstighfar),
     modeDurood: b.modeDurood === 'auto' ? 'auto' : 'manual', modeIstighfar: b.modeIstighfar === 'auto' ? 'auto' : 'manual',
-    pct: Math.max(0, Math.min(100, parseFloat(b.pct) || 0)),
+    pct: Math.max(0, Math.min(100, parseFloat(b.pct) || 0)), qazaStart: num(b.qazaStart),
     capDurood: num(b.capDurood), capIstighfar: num(b.capIstighfar)
   };
   await q.db.collection('settings').updateOne({ _id: 'main' }, { $set: s }, { upsert: true });

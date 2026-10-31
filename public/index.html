@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ibadah Dashboard</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23101c17'/%3E%3Cg fill='none' stroke='%23c8f169' stroke-width='4' stroke-linejoin='round'%3E%3Crect x='16' y='16' width='32' height='32'/%3E%3Crect x='16' y='16' width='32' height='32' transform='rotate(45 32 32)'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='5' fill='%23c8f169'/%3E%3C/svg%3E">
+<meta name="theme-color" content="#101c17">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -126,6 +128,22 @@ h2{font-size:1.05rem;font-weight:700}
 .ins{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .ins li{padding:10px 14px;border:1px solid var(--line);border-radius:14px;font-size:.88rem}
 .ins li::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--acc);margin-right:10px}
+.tip{position:relative;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;border:1.5px solid var(--mute);color:var(--mute);font:700 .66rem/1 "Plus Jakarta Sans",sans-serif;cursor:help;margin-left:8px;vertical-align:middle;user-select:none;flex:none}
+.tip::after{content:"";position:absolute;inset:-10px}
+.tip:hover,.tip:focus-visible{color:var(--ink);border-color:var(--ink)}
+#tipBox{position:fixed;left:0;top:0;z-index:50;max-width:min(280px,calc(100vw - 16px));background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:14px;font-size:.82rem;line-height:1.45;opacity:0;pointer-events:none;transition:opacity .15s}
+#tipBox.show{opacity:1}
+.bar.sm{height:6px;margin-top:6px}
+.qr{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.qr:first-child{border-top:0}
+.qb{display:flex;gap:6px}
+.qb button{border:1px solid var(--line);background:var(--bg);border-radius:999px;min-height:36px;padding:0 14px;font-weight:600}
+.qb button:hover{border-color:var(--g)}
+.qd{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+.qd summary{cursor:pointer;font-weight:600;font-size:.88rem}
+.qo{display:grid;grid-template-columns:repeat(auto-fit,minmax(86px,1fr));gap:10px;margin-top:10px}
+.chip{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 11px;margin:5px 5px 0 0;font-size:.78rem;font-weight:600}
+.chip:hover{border-color:var(--g)}
 [hidden]{display:none!important}
 @media(max-width:1100px){
   .page{display:flex;flex-direction:column;align-items:stretch}
@@ -217,30 +235,30 @@ h2{font-size:1.05rem;font-weight:700}
       </div>
 
       <div class="two" style="order:4">
-        <div class="card"><h2>Durood</h2><div class="sub">Tap to add to this day</div>
+        <div class="card"><h2>Durood<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Tap a button to add to this day. Undo last reverses your latest addition for this counter.">!</span></h2>
           <div class="counter" data-k="durood"></div>
           <label class="gl">Goal for this day <input type="number" id="dayGD" min="0"></label></div>
-        <div class="card"><h2>Istighfar</h2><div class="sub">Tap to add to this day</div>
+        <div class="card"><h2>Istighfar<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Tap a button to add to this day. Undo last reverses your latest addition for this counter.">!</span></h2>
           <div class="counter" data-k="istighfar"></div>
           <label class="gl">Goal for this day <input type="number" id="dayGI" min="0"></label></div>
       </div>
 
-      <div class="card" style="order:5"><div class="row" style="justify-content:space-between"><h2>Log history</h2><span class="sub">Newest first</span></div>
+      <div class="card" style="order:5"><div class="row" style="justify-content:space-between"><h2>Log history<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Newest first. Press the x on an entry to remove it and take its amount off your total.">!</span></h2></div>
         <div id="logList" class="loglist"></div></div>
 
       <div class="scroll" style="order:6">
-        <div class="card lime"><h2>Tasbih</h2>
+        <div class="card lime"><h2>Tasbih<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Tap the circle to count, pick Durood or Istighfar, then press Add to today.">!</span></h2>
           <div class="row" style="flex-wrap:nowrap;margin-top:12px;gap:16px">
             <button class="tasbih" id="tap" aria-label="Tap to count">0</button>
             <div><select id="tTarget" aria-label="Count for"><option value="durood">Durood</option><option value="istighfar">Istighfar</option></select>
               <div class="counter" style="margin-top:10px"><button id="tReset">Reset</button><button id="tSave" class="btn">Add to today</button></div>
-              <p class="sub" id="tHelp" style="margin:8px 0 0">Tap the circle to count.</p></div></div></div>
-        <div class="card"><h2>Streaks</h2>
+              </div></div></div>
+        <div class="card"><h2>Streaks<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="A day counts toward your streak when all 5 prayers are marked on time or late.">!</span></h2>
           <div class="row" style="gap:24px;margin-top:10px">
             <div class="stat"><span>Current</span><b><svg class="ic" style="width:20px;height:20px;color:var(--gold)"><use href="#i-fire"/></svg> <span id="sCur" style="font:inherit;color:inherit;font-size:inherit">0</span></b></div>
             <div class="stat"><span>Longest</span><b id="sMax">0</b></div>
             <div class="stat"><span>Perfect days</span><b id="sPerf">0</b></div></div>
-          <p class="sub" style="margin:8px 0 0">A day counts when all 5 prayers are on time or late.</p><div id="badges"></div></div>
+          <div id="badges"></div></div>
         <div class="card"><h2>Totals</h2>
           <div class="row" style="gap:22px;margin-top:10px">
             <div class="stat"><span>Durood</span><b id="tD">0</b><span id="tDm"></span></div>
@@ -249,7 +267,7 @@ h2{font-size:1.05rem;font-weight:700}
       </div>
 
       <div class="card" id="sAverage" style="order:7">
-        <div class="row" style="justify-content:space-between"><h2>Daily average</h2>
+        <div class="row" style="justify-content:space-between"><h2>Daily average<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Averages count only days where you logged something, so a forgotten day does not pull them down.">!</span></h2>
           <div class="tabs" id="avgRange"><button data-r="7">7d</button><button data-r="30" class="on">30d</button><button data-r="90">90d</button><button data-r="0">All</button></div></div>
         <div class="sub" id="aDays" style="margin-top:4px"></div>
         <div class="tiles"><div class="tile"><span>Durood / day</span><b id="aD">0</b></div><div class="tile"><span>Istighfar / day</span><b id="aI">0</b></div><div class="tile"><span>Prayers / day</span><b id="aP">0</b></div></div>
@@ -266,14 +284,14 @@ h2{font-size:1.05rem;font-weight:700}
       </div>
 
       <div class="card" id="sHistory" style="order:10">
-        <h2>Last 20 weeks</h2>
+        <h2>Last 20 weeks<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Darker squares mean more prayers done that day. Tap a square to open that day.">!</span></h2>
         <div class="heat" id="heat"></div>
-        <div class="sub">Darker means more prayers done. Tap a square to open that day.</div>
+        
       </div>
 
       <div class="card" id="sGoals" style="order:11">
-        <h2>Goals</h2>
-        <p class="sub" style="margin:4px 0 14px">Each day keeps its own goal, so changes here only affect today and later. In Auto mode a goal rises by the percent below only if you reached the previous day's goal.</p>
+        <h2 style="margin-bottom:14px">Goals<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Each day keeps its own goal, so changes here only affect today and later. In Auto mode a goal rises by the percent only if you reached the previous day goal. Leave Max cap empty for no cap.">!</span></h2>
+        
         <div class="g2">
           <div class="gset"><b>Durood</b>
             <select id="modeD" aria-label="Durood mode"><option value="manual">Manual</option><option value="auto">Auto increase</option></select>
@@ -286,7 +304,7 @@ h2{font-size:1.05rem;font-weight:700}
         </div>
         <div class="row" style="margin-top:14px;align-items:flex-end"><label class="fld" style="width:130px">Auto increase %<input type="number" id="pct" min="0" max="100" step="0.1"></label>
           <button class="btn" id="saveGoals">Save goals</button></div>
-        <p class="sub" style="margin:10px 0 0">Cap 0 or empty means no cap.</p>
+        
         <p class="sub" id="goalPrev" style="margin-bottom:0"></p>
         <p class="sub" id="weekCmp"></p>
         <div class="row" style="margin-top:6px"><button class="btn ghost" id="export">Export backup</button><button class="btn ghost" id="importBtn">Import backup</button>
@@ -295,16 +313,17 @@ h2{font-size:1.05rem;font-weight:700}
     </section>
 
     <aside class="col">
-      <div class="card" style="order:2"><h2>Salat plan</h2><div class="sub" style="margin-bottom:6px">Mark each prayer for this day</div><div id="prayers"></div></div>
-      <div class="card" style="order:3"><h2>Qaza tracker</h2><div class="sub">Missed prayers to make up</div>
+      <div class="card" style="order:2"><h2 style="margin-bottom:6px">Salat plan<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Mark each prayer for the selected day as On time, Late or Missed. Tap a selected option again to clear it.">!</span></h2><div id="prayers"></div></div>
+      <div class="card" style="order:3"><h2>Qaza tracker<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Every prayer you mark Missed is added here automatically. If you pray it late on the same day, mark it Late instead of counting it here. Use +1 for older qaza you make up.">!</span></h2>
         <div class="row" style="align-items:flex-end;justify-content:space-between;margin-top:10px"><div><div class="big" id="qLeft">0</div><div class="sub" id="qOf"></div></div><div class="sub" id="qToday" style="text-align:right"></div></div>
         <div class="bar"><i id="qBar"></i></div>
-        <div class="counter"><button id="q1">+1 made up</button><button id="q5">+5</button><button id="qUndo">Undo</button></div>
-        <p class="sub" id="qPace" style="margin:12px 0 0"></p>
-        <p class="sub" style="margin:6px 0 0">Tip: if you pray a prayer late on the same day, mark it Late instead of counting it here.</p>
-        <label class="gl">Old qaza balance <input type="number" id="qOpen" min="0" placeholder="0"></label></div>
+        <div id="qRows" style="margin-top:8px"></div>
+        <p class="sub" id="qPace" style="margin:8px 0 0"></p>
+        <details class="qd"><summary>Missed days</summary><div id="qDates"></div></details>
+        <details class="qd"><summary>Old qaza balance (before you started)</summary><div class="qo" id="qOpenBox"></div></details></div>
 
-      <div class="card" style="order:8"><h2>Prayer analysis</h2><div class="sub">By prayer, for the selected range</div><div class="chartbox"><canvas id="cPr"></canvas></div></div>
+
+      <div class="card" style="order:8"><h2>Prayer analysis<span class="tip" tabindex="0" role="button" aria-label="Info" data-tip="Counts for each prayer over the range selected in Trends (7, 30 or 90 days).">!</span></h2><div class="chartbox"><canvas id="cPr"></canvas></div></div>
     </aside>
   </div>
 </div>
@@ -315,13 +334,13 @@ h2{font-size:1.05rem;font-weight:700}
 const PR=[['fajr','Fajr'],['dhuhr','Dhuhr'],['asr','Asr'],['maghrib','Maghrib'],['isha','Isha']];
 const ST=[['ontime','On time'],['late','Late'],['missed','Missed']];
 const $=id=>document.getElementById(id);
-let pw=localStorage.getItem('ibadah_pw')||'',entries={},goals={goalDurood:100,goalIstighfar:100,modeDurood:'manual',modeIstighfar:'manual',pct:1,qazaStart:0,capDurood:0,capIstighfar:0},cur='',range=30,charts={},tap=0,timer;
+let pw=localStorage.getItem('ibadah_pw')||'',entries={},goals={goalDurood:100,goalIstighfar:100,modeDurood:'manual',modeIstighfar:'manual',pct:1,qazaStart:0,qazaOpen:{fajr:0,dhuhr:0,asr:0,maghrib:0,isha:0},capDurood:0,capIstighfar:0},cur='',range=30,charts={},tap=0,timer;
 
 const fmt=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 const parse=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
 const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return fmt(d)};
 const todayStr=()=>fmt(new Date());
-const blank=d=>({date:d,qaza:0,log:[],durood:0,istighfar:0,goalDurood:null,goalIstighfar:null,prayers:{fajr:'',dhuhr:'',asr:'',maghrib:'',isha:''}});
+const blank=d=>({date:d,qaza:0,qazaBy:Object.fromEntries(PR.map(([k])=>[k,0])),log:[],durood:0,istighfar:0,goalDurood:null,goalIstighfar:null,prayers:{fajr:'',dhuhr:'',asr:'',maghrib:'',isha:''}});
 const get=d=>entries[d]||blank(d);
 const done=e=>PR.filter(([k])=>e.prayers[k]==='ontime'||e.prayers[k]==='late').length;
 const n=x=>Number(x).toLocaleString();
@@ -379,10 +398,10 @@ function build(){
   document.querySelectorAll('.counter[data-k]').forEach(box=>{
     const k=box.dataset.k;
     [1,10,33,100].forEach(v=>{const b=document.createElement('button');b.textContent='+'+v;b.onclick=()=>addCount(k,v);box.appendChild(b)});
-    const inp=document.createElement('input');inp.type='number';inp.min=0;inp.placeholder='Set total';inp.id='in_'+k;
-    inp.onchange=()=>{if(inp.value==='')return;addCount(k,Math.max(0,parseInt(inp.value)||0)-get(cur)[k])};
+    const inp=document.createElement('input');inp.type='number';inp.min=1;inp.inputMode='numeric';inp.placeholder='Add amount';inp.id='in_'+k;
+    const go=()=>{const v=parseInt(inp.value);if(v>0){addCount(k,v);inp.value=''}};inp.onkeydown=e=>{if(e.key==='Enter')go()};const ab=document.createElement('button');ab.textContent='Add';ab.onclick=go;
     const u=document.createElement('button');u.textContent='Undo last';u.onclick=()=>undoLast(k);
-    box.append(u,inp);
+    box.append(u,inp,ab);
   });
   $('prayers').innerHTML=PR.map(([k,l])=>`<div class="pr"><b>${l}</b><div class="seg" data-p="${k}">${ST.map(([s,t])=>`<button class="${s}" data-s="${s}">${t}</button>`).join('')}</div></div>`).join('');
   document.querySelectorAll('.seg button').forEach(b=>b.onclick=()=>{
@@ -406,7 +425,7 @@ $('tSave').onclick=()=>{if(!tap)return;const k=$('tTarget').value;const t=tap;ta
 [['dayGD','Durood'],['dayGI','Istighfar']].forEach(([id,K])=>$(id).onchange=()=>{entries[cur]=get(cur);entries[cur]['goal'+K]=Math.max(0,parseInt($(id).value)||0);save()});
 $('saveGoals').onclick=async()=>{
   const g={goalDurood:+$('goalD').value||0,goalIstighfar:+$('goalI').value||0,modeDurood:$('modeD').value,modeIstighfar:$('modeI').value,
-    pct:Math.max(0,Math.min(100,parseFloat($('pct').value)||0)),capDurood:+$('capD').value||0,capIstighfar:+$('capI').value||0,qazaStart:goals.qazaStart||0};
+    pct:Math.max(0,Math.min(100,parseFloat($('pct').value)||0)),capDurood:+$('capD').value||0,capIstighfar:+$('capI').value||0,qazaStart:goals.qazaStart||0,qazaOpen:goals.qazaOpen};
   try{await api('/settings',{method:'PUT',body:JSON.stringify(g)});goals=g;
     const td=todayStr(),t=entries[td];
     if(t){KS.forEach(([k,K])=>{t['goal'+K]=null});KS.forEach(([k,K])=>{t['goal'+K]=resolveGoal(td,k,K)});await api('/entries/'+td,{method:'PUT',body:JSON.stringify(t)})}
@@ -460,7 +479,7 @@ function render(){
   const wk=(from,to)=>{let a=0,b=0,c=0;for(let i=from;i<to;i++){const x=get(addDays(todayStr(),-i));a+=x.durood;b+=x.istighfar;c+=done(x)}return{a,b,c}};
   const w1=wk(0,7),w0=wk(7,14),df=(x,y)=>x===y?'same as':(x>y?'up '+n(x-y)+' from':'down '+n(y-x)+' from');
   $('weekCmp').textContent=`Last 7 days vs the 7 before: durood ${df(w1.a,w0.a)} ${n(w0.a)}, istighfar ${df(w1.b,w0.b)} ${n(w0.b)}, prayers ${w1.c} vs ${w0.c}.`;
-  heat();drawCharts();week();hero();logList();qazaCard();avgCard();
+  heat();drawCharts();week();hero();logList();qazaCard();avgCard();spy();
 }
 
 function heat(){
@@ -506,7 +525,6 @@ function hero(){const e=get(cur),gD=resolveGoal(cur,'durood','Durood'),gI=resolv
   if(gD>0&&e.durood<gD)need.push(n(gD-e.durood)+' durood');if(gI>0&&e.istighfar<gI)need.push(n(gI-e.istighfar)+' istighfar');if(p<5)need.push((5-p)+(5-p>1?' prayers':' prayer'));
   $('heroT').textContent=cur===todayStr()?'Today at a glance':'Day summary';
   $('heroMsg').textContent=need.length?'Still to go: '+need.join(', '):'All goals complete. Masha\u2019Allah.'}
-document.querySelectorAll('.rail a').forEach(a=>a.addEventListener('click',()=>document.querySelectorAll('.rail a').forEach(x=>x.classList.toggle('on',x===a))));
 // ---- log history, undo
 function addCount(k,v){const e=entries[cur]=get(cur);if(!e.log)e.log=[];const b=e[k];e[k]=Math.max(0,b+v);const d=e[k]-b;
   if(d){e.log.push({t:Date.now(),k,v:d});if(e.log.length>300)e.log.shift();save()}else render()}
@@ -518,19 +536,60 @@ function logList(){const L=get(cur).log||[],box=$('logList');
   box.innerHTML=L.map((x,i)=>[x,i]).reverse().map(([x,i])=>'<div class="li"><span class="lt">'+new Date(x.t).toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})+'</span><span>'+(x.k==='durood'?'Durood':'Istighfar')+'</span><b class="'+(x.v<0?'neg':'')+'">'+(x.v>0?'+':'')+n(x.v)+'</b><button data-i="'+i+'" aria-label="Remove this entry">\u00d7</button></div>').join('');
   box.querySelectorAll('button').forEach(b=>b.onclick=()=>delLog(+b.dataset.i))}
 
-// ---- qaza
-function qazaStats(){let miss=0,made=0;Object.values(entries).forEach(x=>{miss+=PR.filter(([k])=>x.prayers[k]==='missed').length;made+=x.qaza||0});
-  const owed=(goals.qazaStart||0)+miss;return{owed,made,left:Math.max(0,owed-made)}}
-function addQaza(v){const e=entries[cur]=get(cur),b=e.qaza||0;e.qaza=Math.max(0,b+v);if(e.qaza!==b)save();else if(v<0)toast('Nothing to undo')}
-function qazaCard(){const s=qazaStats(),e=get(cur),pct=s.owed?Math.min(100,Math.round(s.made/s.owed*100)):0;
+// ---- qaza (per prayer)
+function qazaStats(){const per={};let legacy=0;PR.forEach(([k])=>per[k]={open:(goals.qazaOpen||{})[k]||0,miss:0,made:0});
+  Object.values(entries).forEach(x=>{legacy+=x.qaza||0;PR.forEach(([k])=>{if(x.prayers[k]==='missed')per[k].miss++;per[k].made+=(x.qazaBy||{})[k]||0})});
+  let left=0,owed=0,made=0;
+  PR.forEach(([k])=>{const p=per[k];p.owed=p.open+p.miss;p.left=Math.max(0,p.owed-p.made);left+=p.left;owed+=p.owed;made+=Math.min(p.made,p.owed)});
+  const ou=goals.qazaStart||0,ul=Math.max(0,ou-legacy);left+=ul;owed+=ou;made+=Math.min(legacy,ou);
+  return{per,left,owed,made,ul,ou}}
+function addQaza(k,v){const e=entries[cur]=get(cur);if(!e.qazaBy)e.qazaBy=Object.fromEntries(PR.map(([x])=>[x,0]));
+  const o=k==='x'?(e.qaza||0):(e.qazaBy[k]||0),nv=Math.max(0,o+v);
+  if(nv===o){if(v<0)toast('Nothing to undo on this day');return}
+  if(k==='x')e.qaza=nv;else e.qazaBy[k]=nv;save()}
+const madeOn=x=>PR.reduce((a,[k])=>a+((x.qazaBy||{})[k]||0),0)+(x.qaza||0);
+function qazaCard(){const s=qazaStats(),e=get(cur),pct=s.owed?Math.min(100,Math.round(s.made/s.owed*100)):0,tm=madeOn(e);
   $('qLeft').textContent=n(s.left);$('qOf').textContent=s.owed?'left of '+n(s.owed)+' owed':'No qaza owed';
-  $('qBar').style.width=pct+'%';$('qToday').textContent=(e.qaza||0)?n(e.qaza)+' made up on this day':'';
-  let r=0;for(let i=0;i<14;i++)r+=(get(addDays(todayStr(),-i)).qaza||0);r/=14;
-  $('qPace').textContent=s.owed&&s.left===0?'You are all caught up.':(r>0?'At your pace of about '+(Math.round(r*10)/10)+' a day, roughly '+n(Math.ceil(s.left/r))+' days to go.':'Prayers you mark Missed are added automatically. Log makeups to see your pace.');
-  if(document.activeElement!==$('qOpen'))$('qOpen').value=goals.qazaStart||''}
-$('q1').onclick=()=>addQaza(1);$('q5').onclick=()=>addQaza(5);$('qUndo').onclick=()=>addQaza(-1);
-$('qOpen').onchange=()=>{goals.qazaStart=Math.max(0,parseInt($('qOpen').value)||0);
+  $('qBar').style.width=pct+'%';$('qToday').textContent=tm?n(tm)+' made up on this day':'';
+  const rows=PR.map(([k,l])=>({k,l,left:s.per[k].left,owed:s.per[k].owed,made:s.per[k].made}));
+  if(s.ul>0)rows.push({k:'x',l:'Unassigned',left:s.ul,owed:s.ou,made:s.ou-s.ul});
+  const mx=Math.max(0,...rows.map(r=>r.left));
+  $('qRows').innerHTML=rows.map(r=>{const p=r.owed?Math.min(100,Math.round(Math.min(r.made,r.owed)/r.owed*100)):0;
+    return '<div class="qr"><div class="qn"><div class="row" style="gap:8px"><b>'+r.l+'</b>'+(mx>0&&r.left===mx?'<span class="badge" style="margin:0">Most owed</span>':'')+'</div><span class="sub">'+(r.left?n(r.left)+' left':(r.owed?'All made up':'None owed'))+'</span><div class="bar sm"><i style="width:'+p+'%"></i></div></div><div class="qb"><button data-k="'+r.k+'" data-v="1" aria-label="Made up one '+r.l+'">+1</button><button data-k="'+r.k+'" data-v="-1" aria-label="Undo one '+r.l+'">Undo</button></div></div>'}).join('');
+  const yr=new Date().getFullYear();
+  const dl=PR.map(([k,l])=>{const ds=Object.keys(entries).filter(d=>entries[d].prayers[k]==='missed').sort().reverse();if(!ds.length)return'';
+    return '<div style="margin-top:8px"><b style="font-size:.85rem">'+l+' ('+ds.length+')</b><div>'+ds.slice(0,30).map(d=>'<button class="chip" data-d="'+d+'">'+parse(d).toLocaleDateString(undefined,{month:'short',day:'numeric',year:parse(d).getFullYear()===yr?undefined:'numeric'})+'</button>').join('')+(ds.length>30?'<span class="sub"> +'+(ds.length-30)+' more</span>':'')+'</div></div>'}).join('');
+  $('qDates').innerHTML=dl||'<div class="sub" style="margin-top:8px">No prayers are marked Missed.</div>';
+  let r=0;for(let i=0;i<14;i++)r+=madeOn(get(addDays(todayStr(),-i)));r/=14;
+  $('qPace').textContent=r>0&&s.left>0?'At your pace of about '+(Math.round(r*10)/10)+' a day, roughly '+n(Math.ceil(s.left/r))+' days to go.':(s.owed&&s.left===0?'You are all caught up.':'');
+  [...PR.map(([k])=>k),'x'].forEach(k=>{const el=$('qo_'+k);if(el&&document.activeElement!==el)el.value=(k==='x'?goals.qazaStart:(goals.qazaOpen||{})[k])||''})}
+$('qOpenBox').innerHTML=[...PR,['x','Unassigned']].map(([k,l])=>'<label class="fld">'+l+'<input type="number" min="0" id="qo_'+k+'" placeholder="0"></label>').join('');
+$('qOpenBox').onchange=()=>{goals.qazaOpen=Object.fromEntries(PR.map(([k])=>[k,Math.max(0,parseInt($('qo_'+k).value)||0)]));goals.qazaStart=Math.max(0,parseInt($('qo_x').value)||0);
   api('/settings',{method:'PUT',body:JSON.stringify(goals)}).then(()=>toast('Saved')).catch(()=>toast('Save failed'));render()};
+$('qRows').onclick=e=>{const b=e.target.closest('button');if(b)addQaza(b.dataset.k,+b.dataset.v)};
+$('qDates').onclick=e=>{const b=e.target.closest('.chip');if(b){cur=b.dataset.d;render();scrollTo({top:0,behavior:'smooth'})}};
+
+// ---- nav highlight follows scroll
+const navL=[...document.querySelectorAll('.rail a')];
+const secs=[['sToday','sToday'],['sAverage','sAverage'],['sInsights','sAverage'],['sHistory','sHistory'],['sGoals','sGoals']];
+function spy(){const th=innerHeight*.35;let best='sToday',bt=-1e9;
+  secs.forEach(([id,l])=>{const el=$(id);if(!el||el.offsetParent===null&&getComputedStyle(el).position!=='fixed')return;const t=el.getBoundingClientRect().top;if(t<=th&&t>bt){bt=t;best=l}});
+  if(innerHeight+scrollY>=document.documentElement.scrollHeight-6&&scrollY>0)best='sGoals';
+  navL.forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+best))}
+let spyT;addEventListener('scroll',()=>{cancelAnimationFrame(spyT);spyT=requestAnimationFrame(spy)},{passive:true});addEventListener('resize',spy);
+
+// ---- info tips (the small ! icons)
+const tb=document.createElement('div');tb.id='tipBox';tb.setAttribute('role','tooltip');document.body.appendChild(tb);
+const touch=matchMedia('(hover:none)').matches;let tipFor=null;
+function showTip(el){tipFor=el;tb.textContent=el.dataset.tip;tb.classList.add('show');const r=el.getBoundingClientRect(),w=tb.offsetWidth,hh=tb.offsetHeight;
+  tb.style.left=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8)+'px';let y=r.bottom+8;if(y+hh>innerHeight-8)y=r.top-hh-8;tb.style.top=Math.max(8,y)+'px'}
+function hideTip(){tipFor=null;tb.classList.remove('show')}
+document.addEventListener('mouseover',e=>{if(touch)return;const t=e.target.closest&&e.target.closest('.tip');if(t)showTip(t)});
+document.addEventListener('mouseout',e=>{if(!touch&&e.target.closest&&e.target.closest('.tip'))hideTip()});
+document.addEventListener('focusin',e=>{if(touch)return;const t=e.target.closest&&e.target.closest('.tip');if(t)showTip(t)});
+document.addEventListener('focusout',hideTip);
+document.addEventListener('click',e=>{const t=e.target.closest&&e.target.closest('.tip');if(t){if(touch)tipFor===t?hideTip():showTip(t)}else hideTip()});
+addEventListener('scroll',hideTip,{passive:true});
 
 // ---- daily average and insights
 let avgR=30;

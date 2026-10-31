@@ -45,6 +45,7 @@ const cleanLog = l => (Array.isArray(l) ? l : []).slice(-300)
 const cleanEntry = (date, b = {}) => ({
   date,
   qaza: num(b.qaza),
+  qazaBy: Object.fromEntries(PRAYERS.map(k => [k, num(b.qazaBy?.[k])])),
   log: cleanLog(b.log),
   goalDurood: gl(b.goalDurood),
   goalIstighfar: gl(b.goalIstighfar),
@@ -82,7 +83,8 @@ app.get('/api/settings', auth, wrap(async (q, r) => {
   r.json({
     goalDurood: s?.goalDurood ?? 100, goalIstighfar: s?.goalIstighfar ?? 100,
     modeDurood: s?.modeDurood ?? 'manual', modeIstighfar: s?.modeIstighfar ?? 'manual',
-    pct: s?.pct ?? 1, qazaStart: s?.qazaStart ?? 0, capDurood: s?.capDurood ?? 0, capIstighfar: s?.capIstighfar ?? 0
+    pct: s?.pct ?? 1, qazaStart: s?.qazaStart ?? 0,
+    qazaOpen: Object.fromEntries(PRAYERS.map(k => [k, s?.qazaOpen?.[k] ?? 0])), capDurood: s?.capDurood ?? 0, capIstighfar: s?.capIstighfar ?? 0
   });
 }));
 
@@ -92,6 +94,7 @@ app.put('/api/settings', auth, wrap(async (q, r) => {
     goalDurood: num(b.goalDurood), goalIstighfar: num(b.goalIstighfar),
     modeDurood: b.modeDurood === 'auto' ? 'auto' : 'manual', modeIstighfar: b.modeIstighfar === 'auto' ? 'auto' : 'manual',
     pct: Math.max(0, Math.min(100, parseFloat(b.pct) || 0)), qazaStart: num(b.qazaStart),
+    qazaOpen: Object.fromEntries(PRAYERS.map(k => [k, num(b.qazaOpen?.[k])])),
     capDurood: num(b.capDurood), capIstighfar: num(b.capIstighfar)
   };
   await q.db.collection('settings').updateOne({ _id: 'main' }, { $set: s }, { upsert: true });
